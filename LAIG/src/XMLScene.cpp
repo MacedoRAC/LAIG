@@ -14,71 +14,171 @@ XMLScene::XMLScene(char *filename)
 		exit( 1 );
 	}
 
-	TiXmlElement* dgxElement= doc->FirstChildElement( "dgx" );
+	TiXmlElement* anfElement= doc->FirstChildElement( "anf" );
 
-	if (dgxElement == NULL)
+	if (anfElement == NULL)
 	{
-		printf("Main dgx block element not found! Exiting!\n");
+		printf("Main anf block element not found! Exiting!\n");
 		exit(1);
 	}
 
-	initElement = dgxElement->FirstChildElement( "Init" );
-	matsElement = dgxElement->FirstChildElement( "Materials" );
-	textsElement =  dgxElement->FirstChildElement( "Textures" );
-	leavesElement =  dgxElement->FirstChildElement( "Leaves" );
-	nodesElement =  dgxElement->FirstChildElement( "Nodes" );
+	globalsElement = anfElement->FirstChildElement( "globals" );
+	camerasElement = anfElement->FirstChildElement( "cameras" );
+	lightsElement = anfElement->FirstChildElement( "lights" );
+	matsElement = anfElement->FirstChildElement( "appearances" );
+	textsElement =  anfElement->FirstChildElement( "textures" );
+	graphElement =  anfElement->FirstChildElement( "graph" );
 
-	graphElement =  dgxElement->FirstChildElement( "Graph" );
 
-
-	// Init
-	// An example of well-known, required nodes
-
-	if (initElement == NULL)
-		printf("Init block not found!\n");
+	// - - - - - - - - - - - - - - - - - - - - - - - - -
+	// - - - - - - - - - - GLOBALS - - - - - - - - - - -
+	// - - - - - - - - - - - - - - - - - - - - - - - - -
+	if (globalsElement == NULL)
+		printf("Global block not found!\n");
 	else
 	{
-		printf("Processing init:\n");
-		// frustum: example of a node with individual attributes
-		TiXmlElement* frustumElement=initElement->FirstChildElement("frustum");
-		if (frustumElement)
-		{
-			float near,far;
+		printf("Processing globals:\n\n");
 
-			if (frustumElement->QueryFloatAttribute("near",&near)==TIXML_SUCCESS && 
-				frustumElement->QueryFloatAttribute("far",&far)==TIXML_SUCCESS
-				)
-				printf("  frustum attributes: %f %f\n", near, far);
-			else
-				printf("Error parsing frustum\n");
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - - DRAWING - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		TiXmlElement* drawingElement=globalsElement->FirstChildElement("drawing");
+		string mode, shading;
+		float background[4];
+
+		mode = drawingElement->Attribute("mode");
+		if(mode.compare("fill") != 0 && mode.compare("line") != 0 && mode.compare("point") != 0 ){
+			printf("	Invalid drawing mode. A default mode was selected.\n");
+			mode = "fill";
 		}
-		else
-			printf("frustum not found\n");
+
+		printf("	Drawing mode: %s\n", mode.c_str());
 
 
-		// translate: example of a node with an attribute comprising several float values
-		// It shows an example of extracting an attribute's value, and then further parsing that value 
-		// to extract individual values
-		TiXmlElement* translateElement=initElement->FirstChildElement("translate");
-		if (translateElement)
-		{
-			char *valString=NULL;
-			float x,y,z;
-
-			valString=(char *) translateElement->Attribute("xyz");
-
-			if(valString && sscanf(valString,"%f %f %f",&x, &y, &z)==3)
-			{
-				printf("  translate values (XYZ): %f %f %f\n", x, y, z);
-			}
-			else
-				printf("Error parsing translate");
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - - SHADING - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		shading = drawingElement->Attribute("shading");
+		if(shading.compare("flat") != 0 && shading.compare("gouraud") != 0){
+			printf("	Invalid shading. A default shading was selected.\n");
+			shading = "flat";
 		}
-		else
-			printf("translate not found\n");		
 
-		// repeat for each of the variables as needed
-	}
+		printf("	Shading: %s\n", shading.c_str());
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - -BACKGROUND - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+
+		char * valstring = (char *)drawingElement->Attribute("background");
+		if(valstring && sscanf(valstring, "%f %f %f %f", &background[0], &background[1], &background[2], &background[3])!=4){
+			
+			printf("	Invalid background color. Black was assumed as default.\n");
+			background[0]= 0;
+			background[1]= 0;
+			background[2]= 0;
+			background[3]= 1;
+		}
+		
+		printf("	Background color: %f %f %f %f\n\n", background[0], background[1], background[2], background[3]);
+		
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - - CULLING - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		TiXmlElement* cullingElement=globalsElement->FirstChildElement("culling");
+		string face, order;
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - FACE CULLING - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		face = cullingElement->Attribute("face");
+		if(face.compare("none") != 0 && face.compare("back") != 0 && face.compare("front") != 0 && face.compare("both") != 0){
+			printf("	Invalid face culling. A default face culling was selected.\n");
+			face = "back";
+		}
+
+		printf("	Culling face: %s\n", face.c_str());
+
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - - - ORDER - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		order = cullingElement->Attribute("order");
+		if(order.compare("ccw") != 0 && face.compare("cw") != 0 ){
+			printf("	Invalid culling order. A default culling order was selected.\n\n");
+			order="ccw";
+		}
+
+		printf("	Culling order: %s\n\n", order.c_str());
+
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - LIGHTING - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		TiXmlElement* lightingElement=globalsElement->FirstChildElement("lighting");
+		string doublesided, local, enabled;
+		float ambient[4];
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - DOUBLESIDED LIGHTING- - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		doublesided = lightingElement->Attribute("doublesided");
+		if(doublesided.compare("true") != 0 && doublesided.compare("false")){
+			printf("	Invalid doublesided value. A default value was admited.\n");
+			doublesided="false";
+		}
+
+		printf("	Doublesided: %s\n", doublesided.c_str());
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - LOCAL LIGHTING - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		local = lightingElement->Attribute("local");
+		if(local.compare("true") != 0 && local.compare("false")){
+			printf("	Invalid local value. A default value was admited.\n");
+			local="true";
+		}
+
+		printf("	local: %s\n", local.c_str());
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - ENABLED LIGHTING - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		enabled = lightingElement->Attribute("enabled");
+		if(enabled.compare("true") != 0 && enabled.compare("false")){
+			printf("	Invalid enabled value. A default value was admited.\n");
+			enabled="true";
+		}
+
+		printf("	enabled: %s\n", enabled.c_str());
+
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - AMBIENT LIGHTING - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+
+		valstring = (char *)lightingElement->Attribute("ambient");
+		if(valstring && sscanf(valstring, "%f %f %f %f", &ambient[0], &ambient[1], &ambient[2], &ambient[3])!=4){
+			
+			printf("	Invalid ambient values. Default values were assumed.\n");
+			ambient[0]= 0; 
+			ambient[1]= 0;
+			ambient[2]= 0;
+			ambient[3]= 1;
+		}
+		
+		printf("	Ambient: %f %f %f %f\n\n", ambient[0], ambient[1], ambient[2], ambient[3]);
+
+
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - CAMERAS - - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
 
 	// Other blocks could be validated/processed here
 
