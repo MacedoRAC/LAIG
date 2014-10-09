@@ -271,27 +271,30 @@ XMLScene::XMLScene(char *filename)
 				printf("	Invalid type of light. A default value was admited.\n");
 				type="omni";
 			}
+			printf("	Type: %s\n", type);
+
 			enabled = lightsElement->Attribute("enabled");
 			if(enabled.compare("true") != 0 && enabled.compare("false") != 0){
 				printf("	Invalid switch state. A default value was admited.\n");
-				type="true";
+				enabled="true";
 			}
+			printf("	Enabled: %s\n", type);
 			marker = lightsElement->Attribute("marker");
 			if(marker.compare("true") != 0 && marker.compare("false") != 0){
 				printf("	Invalid input on marker light. A default value was admited.\n");
-				type="false";
+				marker="false";
 			}
 
 			TiXmlElement* component=light->FirstChildElement("component");
 
 			while(component){
-				componentType = lightsElement->Attribute("type");
+				componentType = component->Attribute("type");
 				if(componentType.compare("ambient") != 0 && componentType.compare("diffuse") != 0 && componentType.compare("specular") != 0){
 					printf("	Invalid component type input. A default value was admited.\n");
-					type="ambient";
+					componentType="ambient";
 				}
 
-				char * valstring = (char *)lightsElement->Attribute("value");
+				char * valstring = (char *)component->Attribute("value");
 				if(valstring && sscanf(valstring, "%f %f %f %f", &color[0], &color[1], &color[2], &color[3])!=4){
 
 					printf("	Invalid light color. Black was assumed as default.\n");
@@ -303,7 +306,7 @@ XMLScene::XMLScene(char *filename)
 
 				printf("	Light color: %f %f %f %f\n\n", color[0], color[1], color[2], color[3]);
 
-				light = light->NextSiblingElement("component");
+				component = component->NextSiblingElement("component");
 			}
 
 
@@ -312,6 +315,78 @@ XMLScene::XMLScene(char *filename)
 		}
 	}
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - - - TEXTURES- - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	TiXmlElement* textures = textsElement->FirstChildElement("textures");
+
+	string file;
+	float texlength_t, texlength_s;
+	while(textures){
+		printf("Texture - %s\n", textures->Attribute("id"));
+
+		file = textures->Attribute("file");
+		printf("	The texture loaded was: %s", file);
+		
+		if(textures->QueryFloatAttribute("texlength_s", &texlength_s) == TIXML_SUCCESS)
+				printf("	Texlength_s: %f\n", texlength_s);
+
+		if(textures->QueryFloatAttribute("texlength_t", &texlength_t) == TIXML_SUCCESS)
+				printf("	Texlength_s: %f\n", texlength_t);
+
+		textures = textures->NextSiblingElement("textures");
+	}
+
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - -APPEARANCES- - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	TiXmlElement* appearance = matsElement->FirstChildElement("appearance");
+	float shininess;
+	string	textureref, componentType;
+	float color[4];
+
+	while(appearance){
+		printf("Appearance - %s\n", appearance->Attribute("id"));
+
+		if(appearance->QueryFloatAttribute("shininess", &shininess) == TIXML_SUCCESS)
+				printf("	Shininess: %f\n", shininess);
+
+		textureref = appearance->Attribute("textureref");
+		printf("	Textureref: %s\n", textureref);
+
+		TiXmlElement* component=appearance->FirstChildElement("component");
+
+			while(component){
+				componentType = component->Attribute("type");
+				if(componentType.compare("ambient") != 0 && componentType.compare("diffuse") != 0 && componentType.compare("specular") != 0){
+					printf("	Invalid component type input. A default value was admited.\n");
+					componentType="ambient";
+				}
+
+				char * valstring = (char *)component->Attribute("value");
+				if(valstring && sscanf(valstring, "%f %f %f %f", &color[0], &color[1], &color[2], &color[3])!=4){
+
+					printf("	Invalid ambient values. Default values were assumed.\n");
+					color[0]= 0.5;
+					color[1]= 0.5;
+					color[2]= 0.5;
+					color[3]= 1;
+				}
+
+				printf("	%s: %f %f %f %f\n\n",componentType, color[0], color[1], color[2], color[3]);
+
+				component = component->NextSiblingElement("component");
+			}
+
+			appearance = appearance->NextSiblingElement("appearance");
+	}
 	// Other blocks could be validated/processed here
 
 
