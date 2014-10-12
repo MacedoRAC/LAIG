@@ -7,6 +7,7 @@ XMLScene::XMLScene(char *filename)
 
 	doc=new TiXmlDocument( filename );
 	bool loadOkay = doc->LoadFile();
+	parser = new Parser();
 
 	if ( !loadOkay )
 	{
@@ -54,6 +55,8 @@ XMLScene::XMLScene(char *filename)
 		}
 
 		printf("	Drawing mode: %s\n", mode.c_str());
+
+		parser->globals->drawing
 
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -230,11 +233,11 @@ XMLScene::XMLScene(char *filename)
 		char* direction;
 
 		while(ortho){
-			printf("ortho camera: %s", perspective->Attribute("id"));
+			printf("ortho camera: %s", ortho->Attribute("id"));
 
 			direction = (char*)ortho->Attribute("direction");
-			if(direction == (char*)'x' || direction == (char*)'y' || direction == (char*)'z')
-				printf("	Direction: %c\n", direction);
+			if(*direction == 'x' || *direction == 'y' || *direction == 'z')
+				printf("	Direction: %c\n", *direction);
 			if(ortho->QueryFloatAttribute("near", &nearOrtho) == TIXML_SUCCESS)
 				printf("	Near: %f\n", nearOrtho);
 			if(ortho->QueryFloatAttribute("far", &farOrtho) == TIXML_SUCCESS)
@@ -259,7 +262,7 @@ XMLScene::XMLScene(char *filename)
 
 		TiXmlElement *light = lightsElement->FirstChildElement("lights");
 
-		string type, enabled, marker, componentType;
+		string type, marker, componentType;
 		float color[4];
 
 		while (light)
@@ -358,8 +361,9 @@ XMLScene::XMLScene(char *filename)
 		if(appearance->QueryFloatAttribute("shininess", &shininess) == TIXML_SUCCESS)
 				printf("	Shininess: %f\n", shininess);
 
-		textureref = appearance->Attribute("textureref");
-		printf("	Textureref: %s\n", textureref);
+		printf("Textureref - %s\n", appearance->Attribute("textureref"));
+		/*textureref = *appearance->Attribute("textureref");
+		printf("	Textureref: %s\n", &textureref);*/
 
 		TiXmlElement* component=appearance->FirstChildElement("component");
 
@@ -380,74 +384,276 @@ XMLScene::XMLScene(char *filename)
 					color[3]= 1;
 				}
 
-				printf("	%s: %f %f %f %f\n\n",componentType, color[0], color[1], color[2], color[3]);
+				printf("	%s: %f %f %f %f\n\n", componentType, color[0], color[1], color[2], color[3]);
 
 				component = component->NextSiblingElement("component");
 			}
 
 			appearance = appearance->NextSiblingElement("appearance");
 	}
-	// Other blocks could be validated/processed here
+	
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-	// graph section
-	if (graphElement == NULL)
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+		// - - - - - - - - -GRAPH - - -- - - - - - - - - - -
+		// - - - - - - - - - - - - - - - - - - - - - - - - -
+if (graphElement == NULL)
 		printf("Graph block not found!\n");
 	else
 	{
-		char *prefix="  -";
+
 		TiXmlElement *node=graphElement->FirstChildElement();
+		parser->graph->rootID = graphElement->Attribute("rootid");
 
-		while (node)
+		if(	node == NULL)
+			printf("Node block not found!\n");
+		else
 		{
-			printf("Node id '%s' - Descendants:\n",node->Attribute("id"));
-			TiXmlElement *child=node->FirstChildElement();
-			while (child)
+			while (node)
 			{
-				if (strcmp(child->Value(),"Node")==0)
+				Node* pNode = new Node();
+				pNode->id = node->Attribute("id");
+				TiXmlElement *transforms = node->FirstChildElement("transforms");
+				if(transforms == NULL)
 				{
-					// access node data by searching for its id in the nodes section
+					printf("Transforms block not found!\n");
+					break;
+				}
+				else
+				{
+					TiXmlElement *transform = transforms->FirstChildElement("transform");
 
-					TiXmlElement *noderef=findChildByAttribute(nodesElement,"id",child->Attribute("id"));
-
-					if (noderef)
+					while(transform)
 					{
-						// print id
-						printf("  - Node id: '%s'\n", child->Attribute("id"));
+						Transform *tr = new Transform();
+						if((string) transform->Attribute("type") == "translate")
+						{
 
-						// prints some of the data
-						printf("    - Material id: '%s' \n", noderef->FirstChildElement("material")->Attribute("id"));
-						printf("    - Texture id: '%s' \n", noderef->FirstChildElement("texture")->Attribute("id"));
+							tr->type = "translate";
+							char *pos=NULL;
+							float posx,posy,posz;
+							pos=(char *) transform->Attribute("to");
 
-						// repeat for other leaf details
+							if(pos && sscanf(pos,"%f %f %f",&posx, &posy, &posz)==3)
+							{
+								tr->to[0] = posx;
+								tr->to[1] = posy;
+								tr->to[2] = posz;
+							}
+							else
+								printf("\tError reading position\n");
+						}
+						if((string) transform->Attribute("type") == "rotate")
+						{
+							tr->type = "rotate";
+
+							tr->axis = transform->Attribute("axis");
+							float angle;
+							if(transform->QueryFloatAttribute("angle",&angle)==TIXML_SUCCESS)
+								tr->angle = angle;
+						}
+
+						if((string) transform->Attribute("type") == "scale")
+						{
+							tr->type = "scale";
+							char *pos=NULL;
+							float posx,posy,posz;
+							pos=(char *) transform->Attribute("factor");
+
+							if(pos && sscanf(pos,"%f %f %f",&posx, &posy, &posz)==3)
+							{
+								tr->factor[0] = posx;
+								tr->factor[1] = posy;
+								tr->factor[2] = posz;
+							}
+							else
+								printf("\tError reading factor\n");
+						}
+
+
+						pNode->tranforms.push_back(tr);
+						transform = transform->NextSiblingElement();
 					}
-					else
-						printf("  - Node id: '%s': NOT FOUND IN THE NODES SECTION\n", child->Attribute("id"));
+				}
+
+				TiXmlElement *appearance = node->FirstChildElement("appearanceref");
+				if(appearance->Attribute("id") != "inherit")
+				{
+					pNode->apperance = &(parser->appearances[appearance->Attribute("id")]);
+				}
+
+				TiXmlElement *primitives = node->FirstChildElement("primitives");
+				if(primitives == NULL)
+				{
+					printf("Primitives block not found!\n");
+					break;
+				}
+				else
+				{
+
+					TiXmlElement *rectangle = primitives->FirstChildElement("rectangle");
+					TiXmlElement *triangle = primitives->FirstChildElement("triangle");
+					TiXmlElement *cylinder = primitives->FirstChildElement("cylinder");
+					TiXmlElement *sphere = primitives->FirstChildElement("sphere");
+					TiXmlElement *torus = primitives->FirstChildElement("torus");
+
+					while(rectangle){
+						Rectangle* rect = new Rectangle();
+						rect->name = "rectangle";
+
+						char *pos=NULL;
+						float pos1,pos2;
+						pos=(char *) rectangle->Attribute("xy1");
+
+						if(pos && sscanf(pos,"%f %f",&pos1, &pos2)==2)
+						{
+							rect->xy1[0] = pos1;
+							rect->xy1[1] = pos2;
+						}
+						else
+							printf("\tError reading rectangle\n");
+
+						pos=(char *) rectangle->Attribute("xy2");
+
+						if(pos && sscanf(pos,"%f %f",&pos1, &pos2)==2)
+						{
+							rect->xy2[0] = pos1;
+							rect->xy2[1] = pos2;
+						}
+						else
+							printf("\tError reading rectangle\n");
+
+						pNode->primitives.push_back(rect);
+						rectangle=rectangle->NextSiblingElement("rectangle");
+					}
+					while(triangle){
+
+						Triangle* tri = new Triangle();
+						tri->name = "triangle";
+
+						char *pos=NULL;
+						float pos1,pos2, pos3;
+						pos=(char *) triangle->Attribute("xyz1");
+
+						if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
+						{
+							tri->xyz1[0] = pos1;
+							tri->xyz1[1] = pos2;
+							tri->xyz1[2] = pos3;
+						}
+						else
+							printf("\tError reading triangle\n");
+
+						pos=(char *) triangle->Attribute("xyz2");
+
+						if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
+						{
+							tri->xyz2[0] = pos1;
+							tri->xyz2[1] = pos2;
+							tri->xyz2[2] = pos3;
+						}
+						else
+							printf("\tError reading triangle\n");
+
+						pos=(char *) triangle->Attribute("xyz3");
+
+						if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
+						{
+							tri->xyz3[0] = pos1;
+							tri->xyz3[1] = pos2;
+							tri->xyz3[2] = pos3;
+						}
+						else
+							printf("\tError reading triangle\n");
+
+						pNode->primitives.push_back(tri);
+
+						triangle=triangle->NextSiblingElement("triangle");
+					}
+					while(cylinder){
+						Cylinder* cyl = new Cylinder(); 
+						cyl->name = "cylinder";
+
+						float base,top,height;
+						int slices, stacks;
+
+						if(cylinder->QueryFloatAttribute("base",&base)==TIXML_SUCCESS)
+							cyl->base = base;
+						if(cylinder->QueryFloatAttribute("top",&top)==TIXML_SUCCESS)
+							cyl->top = top;
+						if(cylinder->QueryFloatAttribute("height",&height)==TIXML_SUCCESS)
+							cyl->height = height;
+						if(cylinder->QueryIntAttribute("slices",&slices)==TIXML_SUCCESS)
+							cyl->slices = slices;
+						if(cylinder->QueryIntAttribute("stacks",&stacks)==TIXML_SUCCESS)
+							cyl->stacks = stacks;
+
+						pNode->primitives.push_back(cyl);
+						cylinder=cylinder->NextSiblingElement("cylinder");
+					}
+					while(sphere){
+						Sphere* sph = new Sphere();
+						sph->name = "sphere";
+
+						float radius;
+						int slices, stacks;
+
+						if(sphere->QueryFloatAttribute("radius",&radius)==TIXML_SUCCESS)
+							sph->radius = radius;
+						if(sphere->QueryIntAttribute("slices",&slices)==TIXML_SUCCESS)
+							sph->slices = slices;
+						if(sphere->QueryIntAttribute("stacks",&stacks)==TIXML_SUCCESS)
+							sph->stacks = stacks;
+
+						pNode->primitives.push_back(sph);
+						sphere=sphere->NextSiblingElement("sphere");
+					}
+					while(torus){
+
+						Torus* tor = new Torus();
+						tor->name = "torus";
+
+						float inner, outer;
+						int slices, loops;
+
+						if(torus->QueryFloatAttribute("inner",&inner)==TIXML_SUCCESS)
+							tor->inner = inner;
+						if(torus->QueryFloatAttribute("outer",&outer)==TIXML_SUCCESS)
+							tor->outer = outer;
+						if(torus->QueryIntAttribute("slices",&slices)==TIXML_SUCCESS)
+							tor->slices = slices;
+						if(torus->QueryIntAttribute("loops",&loops)==TIXML_SUCCESS)
+							tor->loops = loops;
+
+						pNode->primitives.push_back(tor);
+						torus=torus->NextSiblingElement("torus");
+					}
 
 				}
-				if (strcmp(child->Value(),"Leaf")==0)
+
+				TiXmlElement *descendants = node->FirstChildElement("descendants");
+				if(descendants !=NULL)
 				{
-					// access leaf data by searching for its id in the leaves section
-					TiXmlElement *leaf=findChildByAttribute(leavesElement,"id",child->Attribute("id"));
-
-					if (leaf)
+					TiXmlElement *nodeRef = descendants->FirstChildElement();
+					while(nodeRef)
 					{
-						// it is a leaf and it is present in the leaves section
-						printf("  - Leaf id: '%s' ; type: '%s'\n", child->Attribute("id"), leaf->Attribute("type"));
+						pNode->descendants[nodeRef->Attribute("id")] = parser->graph->nodes[nodeRef->Attribute("id")];
 
-						// repeat for other leaf details
+						nodeRef = nodeRef->NextSiblingElement();
 					}
-					else
-						printf("  - Leaf id: '%s' - NOT FOUND IN THE LEAVES SECTION\n",child->Attribute("id"));
 				}
+				parser->graph->nodes[pNode->id] = pNode;
+				node = node->NextSiblingElement();
 
-				child=child->NextSiblingElement();
 			}
-			node=node->NextSiblingElement();
 		}
 	}
 
 }
+
+
+
 
 XMLScene::~XMLScene()
 {
