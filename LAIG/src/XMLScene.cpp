@@ -7,7 +7,6 @@ XMLScene::XMLScene(char *filename)
 
 	doc=new TiXmlDocument( filename );
 	bool loadOkay = doc->LoadFile();
-	parser = new Parser();
 
 	if ( !loadOkay )
 	{
@@ -56,7 +55,7 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Drawing mode: %s\n", mode.c_str());
 
-		parser->globals->drawing
+		parser->globals->drawing.mode=mode;
 
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -69,6 +68,8 @@ XMLScene::XMLScene(char *filename)
 		}
 
 		printf("	Shading: %s\n", shading.c_str());
+
+		parser->globals->drawing.shading = shading;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - -BACKGROUND - - - - - - - - - -
@@ -85,6 +86,11 @@ XMLScene::XMLScene(char *filename)
 		}
 
 		printf("	Background color: %f %f %f %f\n\n", background[0], background[1], background[2], background[3]);
+
+		parser->globals->drawing.background[0] = background[0];
+		parser->globals->drawing.background[1] = background[1];
+		parser->globals->drawing.background[2] = background[2];
+		parser->globals->drawing.background[3] = background[3];
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - - - CULLING - - - - - - - - - -
@@ -103,6 +109,7 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Culling face: %s\n", face.c_str());
 
+		parser->globals->culling.face=face;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - - - - ORDER - - - - - - - - - -
@@ -114,7 +121,8 @@ XMLScene::XMLScene(char *filename)
 		}
 
 		printf("	Culling order: %s\n\n", order.c_str());
-
+		
+		parser->globals->culling.order=order;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - - LIGHTING - - - - - - - - - -
@@ -134,6 +142,11 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Doublesided: %s\n", doublesided.c_str());
 
+		if(doublesided.compare("true"))
+			parser->globals->lighting.doublesided=true;
+		else
+			parser->globals->lighting.doublesided=false;
+
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - LOCAL LIGHTING - - - - - - - -
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -144,6 +157,11 @@ XMLScene::XMLScene(char *filename)
 		}
 
 		printf("	local: %s\n", local.c_str());
+
+		if(local.compare("true"))
+			parser->globals->lighting.local=true;
+		else
+			parser->globals->lighting.local=false;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - ENABLED LIGHTING - - - - - - -
@@ -156,6 +174,10 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	enabled: %s\n", enabled.c_str());
 
+		if(enabled.compare("true"))
+			parser->globals->lighting.enabled=true;
+		else
+			parser->globals->lighting.enabled=false;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - AMBIENT LIGHTING - - - - - - -
@@ -173,7 +195,10 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Ambient: %f %f %f %f\n\n", ambient[0], ambient[1], ambient[2], ambient[3]);
 
-
+		parser->globals->lighting.ambient[0]=ambient[0];
+		parser->globals->lighting.ambient[1]=ambient[1];
+		parser->globals->lighting.ambient[2]=ambient[2];
+		parser->globals->lighting.ambient[3]=ambient[3];
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -185,22 +210,27 @@ XMLScene::XMLScene(char *filename)
 
 		printf("Camera %s\n",camerasElement->Attribute("initial"));
 
-
+		parser->initCam = camerasElement->Attribute("initial");
 		//perspective Cameras
-
+		CPerspective persCam;
 		float near, far, angle;
 		float target[3], pos[3]; //coordinates are saved in an array
 		char *posVal=NULL, *targetVal=NULL;
 
 		while(perspective){
 			printf("perspective camera: %s", perspective->Attribute("id"));
+			persCam.id=perspective->Attribute("id");
 
-			if(perspective->QueryFloatAttribute("near", &near) == TIXML_SUCCESS)
+			if(perspective->QueryFloatAttribute("near", &near) == TIXML_SUCCESS){
 				printf("	Near: %f\n", near);
-			if(perspective->QueryFloatAttribute("far", &far) == TIXML_SUCCESS)
+				persCam.near=near;
+			}if(perspective->QueryFloatAttribute("far", &far) == TIXML_SUCCESS){
 				printf("	Far: %f\n", far);
-			if(perspective->QueryFloatAttribute("angle", &angle) == TIXML_SUCCESS)
+				persCam.far=far;
+			}if(perspective->QueryFloatAttribute("angle", &angle) == TIXML_SUCCESS){
 				printf("	Angle: %f\n", angle);
+				persCam.angle=angle;
+			}
 
 			posVal = (char *) perspective->Attribute("pos");
 			if(posVal && sscanf(posVal, "%f %f %f", &pos[0], &pos[1], &pos[2])!=3){
@@ -211,6 +241,9 @@ XMLScene::XMLScene(char *filename)
 			}
 
 			printf("Camera position: %f ex, %f ey, %f ez\n", pos[0], pos[1], pos[2]);
+			persCam.pos[0]=pos[0];
+			persCam.pos[1]=pos[1];
+			persCam.pos[2]=pos[2];
 
 			targetVal = (char *) perspective->Attribute("target");
 			if(targetVal && sscanf(targetVal, "%f %f %f", &target[0], &target[1], &target[2])!=3){
@@ -221,7 +254,11 @@ XMLScene::XMLScene(char *filename)
 			}
 
 			printf("Camera target: %f ex, %f ey, %f ez\n", target[0], target[1], target[2]);
-
+			persCam.target[0]=target[0];
+			persCam.target[1]=target[1];
+			persCam.target[2]=target[2];
+			
+			parser->cameras[persCam.id]=persCam;
 
 			perspective=perspective->NextSiblingElement("perspective");
 		}
@@ -229,28 +266,39 @@ XMLScene::XMLScene(char *filename)
 
 		//Ortho Cameras
 
+		COrtho orthoCam;
 		float nearOrtho,farOrtho,left,right,top,bottom;
 		char* direction;
 
 		while(ortho){
 			printf("ortho camera: %s", ortho->Attribute("id"));
+			orthoCam.id=ortho->Attribute("id");
 
 			direction = (char*)ortho->Attribute("direction");
-			if(*direction == 'x' || *direction == 'y' || *direction == 'z')
+			if(*direction == 'x' || *direction == 'y' || *direction == 'z'){
 				printf("	Direction: %c\n", *direction);
-			if(ortho->QueryFloatAttribute("near", &nearOrtho) == TIXML_SUCCESS)
+				orthoCam.direction=*direction;
+			}if(ortho->QueryFloatAttribute("near", &nearOrtho) == TIXML_SUCCESS){
 				printf("	Near: %f\n", nearOrtho);
-			if(ortho->QueryFloatAttribute("far", &farOrtho) == TIXML_SUCCESS)
+				orthoCam.near=nearOrtho;
+			}if(ortho->QueryFloatAttribute("far", &farOrtho) == TIXML_SUCCESS){
 				printf("	Far: %f\n", farOrtho);
-			if(ortho->QueryFloatAttribute("left", &left) == TIXML_SUCCESS)
+				orthoCam.far=farOrtho;
+			}if(ortho->QueryFloatAttribute("left", &left) == TIXML_SUCCESS){
 				printf("	Left: %f\n", left);
-			if(ortho->QueryFloatAttribute("right", &right) == TIXML_SUCCESS)
+				orthoCam.left=left;
+			}if(ortho->QueryFloatAttribute("right", &right) == TIXML_SUCCESS){
 				printf("	Right: %f\n", right);
-			if(ortho->QueryFloatAttribute("top", &top) == TIXML_SUCCESS)
+				orthoCam.right=right;
+			}if(ortho->QueryFloatAttribute("top", &top) == TIXML_SUCCESS){
 				printf("	Top: %f\n", top);
-			if(ortho->QueryFloatAttribute("bottom", &bottom) == TIXML_SUCCESS)
+				orthoCam.top=top;
+			}if(ortho->QueryFloatAttribute("bottom", &bottom) == TIXML_SUCCESS){
 				printf("	Bottom: %f\n", bottom);
+				orthoCam.bottom=bottom;
+			}
 
+			parser->cameras[orthoCam.id]=orthoCam;
 			ortho=ortho->NextSiblingElement("ortho");
 		}
 
@@ -264,10 +312,12 @@ XMLScene::XMLScene(char *filename)
 
 		string type, marker, componentType;
 		float color[4];
+		Light lght;
 
 		while (light)
 		{
 			printf("Light - %s\n", light->Attribute("id"));
+			lght.id=light->Attribute("id");
 
 			type = lightsElement->Attribute("type");
 			if(type.compare("omni") != 0 && type.compare("spot") != 0){
@@ -275,6 +325,7 @@ XMLScene::XMLScene(char *filename)
 				type="omni";
 			}
 			printf("	Type: %s\n", type);
+			lght.type=type;
 
 			enabled = lightsElement->Attribute("enabled");
 			if(enabled.compare("true") != 0 && enabled.compare("false") != 0){
@@ -282,11 +333,20 @@ XMLScene::XMLScene(char *filename)
 				enabled="true";
 			}
 			printf("	Enabled: %s\n", type);
+			if(enabled.compare("true"))
+				lght.enabled=true;
+			else
+				lght.enabled=false;
+
 			marker = lightsElement->Attribute("marker");
 			if(marker.compare("true") != 0 && marker.compare("false") != 0){
 				printf("	Invalid input on marker light. A default value was admited.\n");
 				marker="false";
 			}
+			if(marker.compare("true"))
+				lght.marker=true;
+			else
+				lght.marker=false;
 
 			TiXmlElement* component=light->FirstChildElement("component");
 
@@ -296,6 +356,7 @@ XMLScene::XMLScene(char *filename)
 					printf("	Invalid component type input. A default value was admited.\n");
 					componentType="ambient";
 				}
+				lght.type=componentType;
 
 				char * valstring = (char *)component->Attribute("value");
 				if(valstring && sscanf(valstring, "%f %f %f %f", &color[0], &color[1], &color[2], &color[3])!=4){
@@ -308,11 +369,28 @@ XMLScene::XMLScene(char *filename)
 				}
 
 				printf("	Light color: %f %f %f %f\n\n", color[0], color[1], color[2], color[3]);
+				if(componentType.compare("ambient")){
+					lght.ambient[0]=color[0];
+					lght.ambient[1]=color[1];
+					lght.ambient[2]=color[2];
+					lght.ambient[3]=color[3];
+				}else if(componentType.compare("diffuse")){
+					lght.diffuse[0]=color[0];
+					lght.diffuse[1]=color[1];
+					lght.diffuse[2]=color[2];
+					lght.diffuse[3]=color[3];
+				} else{
+					lght.specular[0]=color[0];
+					lght.specular[1]=color[1];
+					lght.specular[2]=color[2];
+					lght.specular[3]=color[3];
+				}
+
 
 				component = component->NextSiblingElement("component");
 			}
 
-
+			parser->lights.push_back(&lght);
 			light = light->NextSiblingElement("lights");
 
 		}
@@ -325,21 +403,26 @@ XMLScene::XMLScene(char *filename)
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	TiXmlElement* textures = textsElement->FirstChildElement("textures");
-
+	Texture text;
 	string file;
 	float texlength_t, texlength_s;
 	while(textures){
 		printf("Texture - %s\n", textures->Attribute("id"));
+		text.id=textures->Attribute("id");
 
 		file = textures->Attribute("file");
 		printf("	The texture loaded was: %s", file);
+		text.file=file;
 		
-		if(textures->QueryFloatAttribute("texlength_s", &texlength_s) == TIXML_SUCCESS)
+		if(textures->QueryFloatAttribute("texlength_s", &texlength_s) == TIXML_SUCCESS){
 				printf("	Texlength_s: %f\n", texlength_s);
-
-		if(textures->QueryFloatAttribute("texlength_t", &texlength_t) == TIXML_SUCCESS)
+				text.texLengthS=texlength_s;
+		}if(textures->QueryFloatAttribute("texlength_t", &texlength_t) == TIXML_SUCCESS){
 				printf("	Texlength_s: %f\n", texlength_t);
+				text.texLengthT=texlength_t;
+		}
 
+		parser->textures[text.id]=text;
 		textures = textures->NextSiblingElement("textures");
 	}
 
@@ -354,13 +437,15 @@ XMLScene::XMLScene(char *filename)
 	float shininess;
 	string	textureref, componentType;
 	float color[4];
+	Appearance appea;
 
 	while(appearance){
 		printf("Appearance - %s\n", appearance->Attribute("id"));
+		appea.id=appearance->Attribute("id");
 
-		if(appearance->QueryFloatAttribute("shininess", &shininess) == TIXML_SUCCESS)
+		if(appearance->QueryFloatAttribute("shininess", &shininess) == TIXML_SUCCESS){
 				printf("	Shininess: %f\n", shininess);
-
+		}
 		printf("Textureref - %s\n", appearance->Attribute("textureref"));
 		/*textureref = *appearance->Attribute("textureref");
 		printf("	Textureref: %s\n", &textureref);*/
@@ -472,7 +557,7 @@ if (graphElement == NULL)
 						}
 
 
-						pNode->tranforms.push_back(tr);
+						pNode->transforms.push_back(tr);
 						transform = transform->NextSiblingElement();
 					}
 				}
@@ -480,7 +565,7 @@ if (graphElement == NULL)
 				TiXmlElement *appearance = node->FirstChildElement("appearanceref");
 				if(appearance->Attribute("id") != "inherit")
 				{
-					pNode->apperance = &(parser->appearances[appearance->Attribute("id")]);
+					pNode->appearance = &(parser->appearances[appearance->Attribute("id")]);
 				}
 
 				TiXmlElement *primitives = node->FirstChildElement("primitives");
