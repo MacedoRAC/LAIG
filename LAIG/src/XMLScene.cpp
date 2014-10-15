@@ -55,7 +55,7 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Drawing mode: %s\n", mode.c_str());
 
-		parser->globals->drawing.mode=mode;
+		parser.globals->drawing.mode=mode;
 
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -69,7 +69,7 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Shading: %s\n", shading.c_str());
 
-		parser->globals->drawing.shading = shading;
+		parser.globals->drawing.shading = shading;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - -BACKGROUND - - - - - - - - - -
@@ -87,10 +87,10 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Background color: %f %f %f %f\n\n", background[0], background[1], background[2], background[3]);
 
-		parser->globals->drawing.background[0] = background[0];
-		parser->globals->drawing.background[1] = background[1];
-		parser->globals->drawing.background[2] = background[2];
-		parser->globals->drawing.background[3] = background[3];
+		parser.globals->drawing.background[0] = background[0];
+		parser.globals->drawing.background[1] = background[1];
+		parser.globals->drawing.background[2] = background[2];
+		parser.globals->drawing.background[3] = background[3];
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - - - CULLING - - - - - - - - - -
@@ -109,7 +109,7 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Culling face: %s\n", face.c_str());
 
-		parser->globals->culling.face=face;
+		parser.globals->culling.face=face;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - - - - ORDER - - - - - - - - - -
@@ -122,7 +122,7 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Culling order: %s\n\n", order.c_str());
 		
-		parser->globals->culling.order=order;
+		parser.globals->culling.order=order;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - - LIGHTING - - - - - - - - - -
@@ -143,9 +143,9 @@ XMLScene::XMLScene(char *filename)
 		printf("	Doublesided: %s\n", doublesided.c_str());
 
 		if(doublesided.compare("true"))
-			parser->globals->lighting.doublesided=true;
+			parser.globals->lighting.doublesided=true;
 		else
-			parser->globals->lighting.doublesided=false;
+			parser.globals->lighting.doublesided=false;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - LOCAL LIGHTING - - - - - - - -
@@ -159,9 +159,9 @@ XMLScene::XMLScene(char *filename)
 		printf("	local: %s\n", local.c_str());
 
 		if(local.compare("true"))
-			parser->globals->lighting.local=true;
+			parser.globals->lighting.local=true;
 		else
-			parser->globals->lighting.local=false;
+			parser.globals->lighting.local=false;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - ENABLED LIGHTING - - - - - - -
@@ -175,9 +175,9 @@ XMLScene::XMLScene(char *filename)
 		printf("	enabled: %s\n", enabled.c_str());
 
 		if(enabled.compare("true"))
-			parser->globals->lighting.enabled=true;
+			parser.globals->lighting.enabled=true;
 		else
-			parser->globals->lighting.enabled=false;
+			parser.globals->lighting.enabled=false;
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 		// - - - - - - - - - AMBIENT LIGHTING - - - - - - -
@@ -195,10 +195,10 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Ambient: %f %f %f %f\n\n", ambient[0], ambient[1], ambient[2], ambient[3]);
 
-		parser->globals->lighting.ambient[0]=ambient[0];
-		parser->globals->lighting.ambient[1]=ambient[1];
-		parser->globals->lighting.ambient[2]=ambient[2];
-		parser->globals->lighting.ambient[3]=ambient[3];
+		parser.globals->lighting.ambient[0]=ambient[0];
+		parser.globals->lighting.ambient[1]=ambient[1];
+		parser.globals->lighting.ambient[2]=ambient[2];
+		parser.globals->lighting.ambient[3]=ambient[3];
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -210,7 +210,7 @@ XMLScene::XMLScene(char *filename)
 
 		printf("Camera %s\n",camerasElement->Attribute("initial"));
 
-		parser->initCam = camerasElement->Attribute("initial");
+		parser.initCam = camerasElement->Attribute("initial");
 		//perspective Cameras
 		CPerspective persCam;
 		float near, far, angle;
@@ -258,7 +258,7 @@ XMLScene::XMLScene(char *filename)
 			persCam.target[1]=target[1];
 			persCam.target[2]=target[2];
 			
-			parser->cameras[persCam.id]=persCam;
+			parser.cameras[persCam.id]=persCam;
 
 			perspective=perspective->NextSiblingElement("perspective");
 		}
@@ -298,7 +298,7 @@ XMLScene::XMLScene(char *filename)
 				orthoCam.bottom=bottom;
 			}
 
-			parser->cameras[orthoCam.id]=orthoCam;
+			parser.cameras[orthoCam.id]=orthoCam;
 			ortho=ortho->NextSiblingElement("ortho");
 		}
 
@@ -390,7 +390,7 @@ XMLScene::XMLScene(char *filename)
 				component = component->NextSiblingElement("component");
 			}
 
-			parser->lights.push_back(&lght);
+			parser.lights.push_back(&lght);
 			light = light->NextSiblingElement("lights");
 
 		}
@@ -422,7 +422,7 @@ XMLScene::XMLScene(char *filename)
 				text.texLengthT=texlength_t;
 		}
 
-		parser->textures[text.id]=text;
+		parser.textures[text.id]=text;
 		textures = textures->NextSiblingElement("textures");
 	}
 
@@ -445,8 +445,10 @@ XMLScene::XMLScene(char *filename)
 
 		if(appearance->QueryFloatAttribute("shininess", &shininess) == TIXML_SUCCESS){
 				printf("	Shininess: %f\n", shininess);
+				appea.shininess=shininess;
 		}
 		printf("Textureref - %s\n", appearance->Attribute("textureref"));
+		appea.textureRef=appearance->Attribute("textureref");
 		/*textureref = *appearance->Attribute("textureref");
 		printf("	Textureref: %s\n", &textureref);*/
 
@@ -459,6 +461,24 @@ XMLScene::XMLScene(char *filename)
 					componentType="ambient";
 				}
 
+				printf("	%s: %f %f %f %f\n\n", componentType, color[0], color[1], color[2], color[3]);
+				if(componentType.compare("ambient")){
+					appea.ambient[0]=color[0];
+					appea.ambient[1]=color[1];
+					appea.ambient[2]=color[2];
+					appea.ambient[3]=color[3];
+				}else if(componentType.compare("diffuse")){
+					appea.diffuse[0]=color[0];
+					appea.diffuse[1]=color[1];
+					appea.diffuse[2]=color[2];
+					appea.diffuse[3]=color[3];
+				} else{
+					appea.specular[0]=color[0];
+					appea.specular[1]=color[1];
+					appea.specular[2]=color[2];
+					appea.specular[3]=color[3];
+				}
+
 				char * valstring = (char *)component->Attribute("value");
 				if(valstring && sscanf(valstring, "%f %f %f %f", &color[0], &color[1], &color[2], &color[3])!=4){
 
@@ -469,11 +489,10 @@ XMLScene::XMLScene(char *filename)
 					color[3]= 1;
 				}
 
-				printf("	%s: %f %f %f %f\n\n", componentType, color[0], color[1], color[2], color[3]);
-
 				component = component->NextSiblingElement("component");
 			}
 
+			parser.appearances[appea.id]=appea;
 			appearance = appearance->NextSiblingElement("appearance");
 	}
 	
@@ -489,7 +508,7 @@ if (graphElement == NULL)
 	{
 
 		TiXmlElement *node=graphElement->FirstChildElement();
-		parser->graph->rootID = graphElement->Attribute("rootid");
+		parser.graph->rootID = graphElement->Attribute("rootid");
 
 		if(	node == NULL)
 			printf("Node block not found!\n");
@@ -565,7 +584,7 @@ if (graphElement == NULL)
 				TiXmlElement *appearance = node->FirstChildElement("appearanceref");
 				if(appearance->Attribute("id") != "inherit")
 				{
-					pNode->appearance = &(parser->appearances[appearance->Attribute("id")]);
+					pNode->appearance = &(parser.appearances[appearance->Attribute("id")]);
 				}
 
 				TiXmlElement *primitives = node->FirstChildElement("primitives");
@@ -723,12 +742,12 @@ if (graphElement == NULL)
 					TiXmlElement *nodeRef = descendants->FirstChildElement();
 					while(nodeRef)
 					{
-						pNode->descendants[nodeRef->Attribute("id")] = parser->graph->nodes[nodeRef->Attribute("id")];
+						pNode->descendants[nodeRef->Attribute("id")] = parser.graph->nodes[nodeRef->Attribute("id")];
 
 						nodeRef = nodeRef->NextSiblingElement();
 					}
 				}
-				parser->graph->nodes[pNode->id] = pNode;
+				parser.graph->nodes[pNode->id] = pNode;
 				node = node->NextSiblingElement();
 
 			}

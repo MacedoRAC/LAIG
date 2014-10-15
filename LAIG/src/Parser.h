@@ -75,7 +75,7 @@ class Appearance
 {
 public:
 	string id, textureRef;
-	float ambient[4], diffuse[4], specular[4];
+	float ambient[4], diffuse[4], specular[4], shininess;
 };
 
 class Transform
