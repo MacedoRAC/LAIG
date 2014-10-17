@@ -55,7 +55,8 @@ XMLScene::XMLScene(char *filename)
 
 		printf("	Drawing mode: %s\n", mode.c_str());
 
-		parser.globals->drawing.mode=mode;
+		
+		parser.globals->drawing.mode=mode; //crashing here
 
 
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -436,7 +437,7 @@ XMLScene::XMLScene(char *filename)
 	TiXmlElement* appearance = matsElement->FirstChildElement("appearance");
 	float shininess;
 	string	textureref, componentType;
-	float color[4];
+	float color[4]={0,0,0,0};
 	Appearance appea;
 
 	while(appearance){
@@ -447,10 +448,8 @@ XMLScene::XMLScene(char *filename)
 				printf("	Shininess: %f\n", shininess);
 				appea.shininess=shininess;
 		}
-		printf("Textureref - %s\n", appearance->Attribute("textureref"));
-		appea.textureRef=appearance->Attribute("textureref");
-		/*textureref = *appearance->Attribute("textureref");
-		printf("	Textureref: %s\n", &textureref);*/
+		/*printf("Textureref - %s\n", appearance->Attribute("textureref"));
+		appea.textureRef=appearance->Attribute("textureref");*/
 
 		TiXmlElement* component=appearance->FirstChildElement("component");
 
@@ -757,7 +756,9 @@ if (graphElement == NULL)
 }
 
 
-
+void XMLScene::switchLight(int id,bool enable1){
+	parser.lights[id]->enabled = enable1;
+}
 
 XMLScene::~XMLScene()
 {

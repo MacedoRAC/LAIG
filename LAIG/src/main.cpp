@@ -2,8 +2,8 @@
 #include <exception>
 #include <ctime>
 
-#include "CGFapplication.h"
 #include "XMLScene.h"
+#include "CGFapplication.h"
 
 int main(int argc, char* argv[]){
 	srand(time(NULL));
