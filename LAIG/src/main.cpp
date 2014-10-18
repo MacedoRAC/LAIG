@@ -4,6 +4,7 @@
 
 #include "XMLScene.h"
 #include "CGFapplication.h"
+#include "GUI.h"
 
 int main(int argc, char* argv[]){
 	srand(time(NULL));
@@ -14,7 +15,7 @@ int main(int argc, char* argv[]){
 		app.init(&argc, argv);
 
 		app.setScene(new XMLScene(argv[1]));
-		app.setInterface(new CGFinterface());
+		app.setInterface(new GUI());
 
 		app.run();
 	}

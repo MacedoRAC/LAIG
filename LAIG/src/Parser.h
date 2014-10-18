@@ -77,6 +77,8 @@ class Appearance
 public:
 	string id, textureRef;
 	float ambient[4], diffuse[4], specular[4], shininess;
+	CGFappearance *appCGF;
+	bool isTexApp;
 };
 
 class Transform
@@ -383,10 +385,10 @@ class Node
 {
 public:
 	string id;
-	vector<Transform*> transforms;
-	Appearance* appearance;
+	float matrix[16];
+	string appearanceRef;
 	vector<Primitives*> primitives;
-	map<string, Node*> descendants;
+	vector<string> descendants;
 };
 
 class Graph
@@ -404,8 +406,8 @@ public:
 	string initCam;
 	string activeCam;
 	vector<Light*> lights;
-	map<string, Texture> textures;
-	map<string, Appearance> appearances;
+	map<string, Texture*> textures;
+	map<string, Appearance*> appearances;
 	Graph* graph;
 	Parser();
 	~Parser();

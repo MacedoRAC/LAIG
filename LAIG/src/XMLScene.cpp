@@ -77,7 +77,7 @@ XMLScene::XMLScene(char *filename)
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 
 		char * valstring = (char *)drawingElement->Attribute("background");
-		if(valstring && sscanf(valstring, "%f %f %f %f", &background[0], &background[1], &background[2], &background[3])!=4){
+		if(valstring && sscanf_s(valstring, "%f %f %f %f", &background[0], &background[1], &background[2], &background[3])!=4){
 
 			printf("	Invalid background color. Black was assumed as default.\n");
 			background[0]= 0;
@@ -185,7 +185,7 @@ XMLScene::XMLScene(char *filename)
 		// - - - - - - - - - - - - - - - - - - - - - - - - -
 
 		valstring = (char *)lightingElement->Attribute("ambient");
-		if(valstring && sscanf(valstring, "%f %f %f %f", &ambient[0], &ambient[1], &ambient[2], &ambient[3])!=4){
+		if(valstring && sscanf_s(valstring, "%f %f %f %f", &ambient[0], &ambient[1], &ambient[2], &ambient[3])!=4){
 
 			printf("	Invalid ambient values. Default values were assumed.\n");
 			ambient[0]= 0.2; 
@@ -234,7 +234,7 @@ XMLScene::XMLScene(char *filename)
 			}
 
 			posVal = (char *) perspective->Attribute("pos");
-			if(posVal && sscanf(posVal, "%f %f %f", &pos[0], &pos[1], &pos[2])!=3){
+			if(posVal && sscanf_s(posVal, "%f %f %f", &pos[0], &pos[1], &pos[2])!=3){
 				printf("Error parsing perspective camera position. Default position was admited.\n");
 				pos[0]=0;
 				pos[1]=0;
@@ -247,7 +247,7 @@ XMLScene::XMLScene(char *filename)
 			persCam.pos[2]=pos[2];
 
 			targetVal = (char *) perspective->Attribute("target");
-			if(targetVal && sscanf(targetVal, "%f %f %f", &target[0], &target[1], &target[2])!=3){
+			if(targetVal && sscanf_s(targetVal, "%f %f %f", &target[0], &target[1], &target[2])!=3){
 				printf("Error parsing perspective camera target. Default position was admited.\n");
 				target[0]=1;
 				target[1]=1;
@@ -360,7 +360,7 @@ XMLScene::XMLScene(char *filename)
 				lght.type=componentType;
 
 				char * valstring = (char *)component->Attribute("value");
-				if(valstring && sscanf(valstring, "%f %f %f %f", &color[0], &color[1], &color[2], &color[3])!=4){
+				if(valstring && sscanf_s(valstring, "%f %f %f %f", &color[0], &color[1], &color[2], &color[3])!=4){
 
 					printf("	Invalid light color. Black was assumed as default.\n");
 					color[0]= 0.5;
@@ -423,7 +423,7 @@ XMLScene::XMLScene(char *filename)
 				text.texLengthT=texlength_t;
 		}
 
-		parser.textures[text.id]=text;
+		*parser.textures[text.id]=text;
 		textures = textures->NextSiblingElement("textures");
 	}
 
@@ -479,7 +479,7 @@ XMLScene::XMLScene(char *filename)
 				}
 
 				char * valstring = (char *)component->Attribute("value");
-				if(valstring && sscanf(valstring, "%f %f %f %f", &color[0], &color[1], &color[2], &color[3])!=4){
+				if(valstring && sscanf_s(valstring, "%f %f %f %f", &color[0], &color[1], &color[2], &color[3])!=4){
 
 					printf("	Invalid ambient values. Default values were assumed.\n");
 					color[0]= 0.5;
@@ -491,7 +491,7 @@ XMLScene::XMLScene(char *filename)
 				component = component->NextSiblingElement("component");
 			}
 
-			parser.appearances[appea.id]=appea;
+			*parser.appearances[appea.id]=appea;
 			appearance = appearance->NextSiblingElement("appearance");
 	}
 	
@@ -518,79 +518,70 @@ if (graphElement == NULL)
 				Node* pNode = new Node();
 				pNode->id = node->Attribute("id");
 				TiXmlElement *transforms = node->FirstChildElement("transforms");
+				glLoadIdentity();
+				glGetFloatv(GL_MODELVIEW_MATRIX,pNode->matrix);
 				if(transforms == NULL)
 				{
 					printf("Transforms block not found!\n");
-					break;
 				}
 				else
 				{
 					TiXmlElement *transform = transforms->FirstChildElement("transform");
-
 					while(transform)
 					{
-						Transform *tr = new Transform();
 						if((string) transform->Attribute("type") == "translate")
 						{
 
-							tr->type = "translate";
 							char *pos=NULL;
 							float posx,posy,posz;
 							pos=(char *) transform->Attribute("to");
 
-							if(pos && sscanf(pos,"%f %f %f",&posx, &posy, &posz)==3)
+							if(pos && sscanf_s(pos,"%f %f %f",&posx, &posy, &posz)==3)
 							{
-								tr->to[0] = posx;
-								tr->to[1] = posy;
-								tr->to[2] = posz;
+								glTranslatef(posx,posy,posz);
 							}
 							else
 								printf("\tError reading position\n");
 						}
 						if((string) transform->Attribute("type") == "rotate")
 						{
-							tr->type = "rotate";
-
-							tr->axis = transform->Attribute("axis");
+							string axis = (char*) transform->Attribute("axis");
 							float angle;
 							if(transform->QueryFloatAttribute("angle",&angle)==TIXML_SUCCESS)
-								tr->angle = angle;
+								glRotatef(angle, axis == "x", axis == "y", axis == "z");
 						}
 
 						if((string) transform->Attribute("type") == "scale")
 						{
-							tr->type = "scale";
 							char *pos=NULL;
 							float posx,posy,posz;
 							pos=(char *) transform->Attribute("factor");
 
-							if(pos && sscanf(pos,"%f %f %f",&posx, &posy, &posz)==3)
+							if(pos && sscanf_s(pos,"%f %f %f",&posx, &posy, &posz)==3)
 							{
-								tr->factor[0] = posx;
-								tr->factor[1] = posy;
-								tr->factor[2] = posz;
+								glScalef(posx,posy,posz);
 							}
 							else
 								printf("\tError reading factor\n");
 						}
 
 
-						pNode->transforms.push_back(tr);
+						glGetFloatv(GL_MODELVIEW_MATRIX,pNode->matrix);
 						transform = transform->NextSiblingElement();
 					}
 				}
 
 				TiXmlElement *appearance = node->FirstChildElement("appearanceref");
-				if(appearance->Attribute("id") != "inherit")
-				{
-					pNode->appearance = &(parser.appearances[appearance->Attribute("id")]);
-				}
+
+				if(appearance)
+					pNode->appearanceRef = appearance->Attribute("id");
+				else 
+					pNode->appearanceRef = "";
 
 				TiXmlElement *primitives = node->FirstChildElement("primitives");
 				if(primitives == NULL)
 				{
 					printf("Primitives block not found!\n");
-					break;
 				}
 				else
 				{
@@ -609,7 +600,7 @@ if (graphElement == NULL)
 						float pos1,pos2;
 						pos=(char *) rectangle->Attribute("xy1");
 
-						if(pos && sscanf(pos,"%f %f",&pos1, &pos2)==2)
+						if(pos && sscanf_s(pos,"%f %f",&pos1, &pos2)==2)
 						{
 							rect->xy1[0] = pos1;
 							rect->xy1[1] = pos2;
@@ -619,7 +610,7 @@ if (graphElement == NULL)
 
 						pos=(char *) rectangle->Attribute("xy2");
 
-						if(pos && sscanf(pos,"%f %f",&pos1, &pos2)==2)
+						if(pos && sscanf_s(pos,"%f %f",&pos1, &pos2)==2)
 						{
 							rect->xy2[0] = pos1;
 							rect->xy2[1] = pos2;
@@ -639,7 +630,7 @@ if (graphElement == NULL)
 						float pos1,pos2, pos3;
 						pos=(char *) triangle->Attribute("xyz1");
 
-						if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
+						if(pos && sscanf_s(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
 						{
 							tri->xyz1[0] = pos1;
 							tri->xyz1[1] = pos2;
@@ -650,7 +641,7 @@ if (graphElement == NULL)
 
 						pos=(char *) triangle->Attribute("xyz2");
 
-						if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
+						if(pos && sscanf_s(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
 						{
 							tri->xyz2[0] = pos1;
 							tri->xyz2[1] = pos2;
@@ -661,7 +652,7 @@ if (graphElement == NULL)
 
 						pos=(char *) triangle->Attribute("xyz3");
 
-						if(pos && sscanf(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
+						if(pos && sscanf_s(pos,"%f %f %f",&pos1, &pos2, &pos3)==3)
 						{
 							tri->xyz3[0] = pos1;
 							tri->xyz3[1] = pos2;
@@ -741,7 +732,7 @@ if (graphElement == NULL)
 					TiXmlElement *nodeRef = descendants->FirstChildElement();
 					while(nodeRef)
 					{
-						pNode->descendants[nodeRef->Attribute("id")] = parser.graph->nodes[nodeRef->Attribute("id")];
+						pNode->descendants.push_back(nodeRef->Attribute("id"));
 
 						nodeRef = nodeRef->NextSiblingElement();
 					}
@@ -752,6 +743,7 @@ if (graphElement == NULL)
 			}
 		}
 	}
+
 
 }
 
@@ -764,6 +756,189 @@ XMLScene::~XMLScene()
 {
 	delete(doc);
 }
+
+void XMLScene::init() 
+{
+
+	float globalAmbientLight[4];
+	for(int i = 0; i < 4 ;i++)
+		globalAmbientLight[i] = parser.globals->lighting.ambient[i];
+
+	if(parser.globals->lighting.enabled)
+		glEnable(GL_LIGHTING);
+	else
+		glDisable(GL_LIGHTING);
+
+	if(parser.globals->lighting.doublesided)
+		glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	else
+		glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+
+	if(parser.globals->lighting.local)
+		glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+	else
+		glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_FALSE);
+
+
+
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, globalAmbientLight);  
+
+
+	if(parser.globals->drawing.shading == "flat")
+		glShadeModel(GL_FLAT);
+	else
+		glShadeModel(GL_SMOOTH);
+
+
+
+	if(parser.globals->drawing.mode == "fill")
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	else if(parser.globals->drawing.mode == "point")
+		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
+	glClearColor(parser.globals->drawing.background[0], parser.globals->drawing.background[1],
+		parser.globals->drawing.background[2],parser.globals->drawing.background[3]);
+
+	//Globals culling
+	glEnable(GL_CULL_FACE);
+
+	if(parser.globals->culling.face == "none")
+		glDisable(GL_CULL_FACE);
+	else if (parser.globals->culling.face == "front")
+		glCullFace(GL_FRONT);
+	else if (parser.globals->culling.face == "back")
+		glCullFace(GL_BACK);
+	else
+		glCullFace(GL_FRONT_AND_BACK);
+
+	if(parser.globals->culling.order == "cw")
+		glFrontFace(GL_CW);
+	else
+		glFrontFace(GL_CCW);
+
+	int id[8];
+	id[0] = GL_LIGHT0;
+	id[1] = GL_LIGHT1;
+	id[2] = GL_LIGHT2;
+	id[3] = GL_LIGHT3;
+	id[4] = GL_LIGHT4;
+	id[5] = GL_LIGHT5;
+	id[6] = GL_LIGHT6;
+	id[7] = GL_LIGHT7;
+
+
+	for(unsigned int i=0;i<parser.lights.size() && i<8;i++)
+	{
+
+
+		CGFlight* light;
+		Light* recentlight = parser.lights[i];
+		float pos[4];
+		pos[0] = recentlight->pos[0];
+		pos[1] = recentlight->pos[1];
+		pos[2] = recentlight->pos[2];
+		pos[3] = 1;
+		if(recentlight->type==("spot")){
+			//glLightf(id,GL_SPOT_CUTOFF,recentlight->angle);
+			glLightf(id[i],GL_SPOT_EXPONENT,recentlight->exponent);
+			glLightfv(id[i],GL_SPOT_DIRECTION,recentlight->target);
+			pos[3] = 0;
+			light->setAngle(recentlight->angle);
+		}
+
+		light = new CGFlight(id[i], pos);
+		light->setAmbient(recentlight->ambient);
+		light->setSpecular(recentlight->specular);
+		light->setDiffuse(recentlight->diffuse);
+
+		lightsV.push_back(light);
+	}
+
+
+
+	// Uncomment below to enable normalization of lighting normal vectors
+	glEnable (GL_NORMALIZE);
+	glEnable (GL_TEXTURE_2D);
+
+	//Declares scene elements
+
+}
+
+
+
+
+void XMLScene::display() 
+{
+
+	// ---- BEGIN Background, camera and axis setup
+
+	// Clear image and depth buffer everytime we update the scene
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+	// Initialize Model-View matrix as identity (no transformation
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+
+	// Apply transformations corresponding to the camera position relative to the origin
+	CGFscene::activeCamera->applyView();
+
+
+	for(unsigned int i=0;i<parser.lights.size() && i<8;i++)
+	{
+		if(parser.lights[i]->marker)
+			lightsV[i]->draw();
+
+		lightsV[i]->disable();
+		if(parser.lights[i]->enabled)
+			lightsV[i]->enable();
+		lightsV[i]->update();
+	}
+	// Draw axis
+	axis.draw();
+
+	drawGraph(parser.graph->rootID);
+
+	glutSwapBuffers();
+}
+
+void XMLScene::drawGraph(string nodeID)
+{
+
+	Node Cnode;
+	Cnode = *parser.graph->nodes[nodeID];
+	if(Cnode.appearanceRef != "")
+		if(Cnode.appearanceRef != "inherit")
+			parser.appearances[Cnode.appearanceRef]->appCGF->apply();
+
+	glMultMatrixf(Cnode.matrix);
+
+	for(unsigned int i = 0; i < Cnode.primitives.size(); i++)
+	{
+		if(Cnode.appearanceRef != "inherit")
+		{
+			if(parser.appearances[Cnode.appearanceRef]->isTexApp)
+				(*Cnode.primitives[i]).draw(parser.textures[parser.appearances[Cnode.appearanceRef]->textureRef]);
+			else
+				(*Cnode.primitives[i]).draw();
+		}
+		else
+			(*Cnode.primitives[i]).draw();
+	}
+
+	for(unsigned int i = 0; i < Cnode.descendants.size(); i++)
+	{
+		glPushMatrix();
+		drawGraph(Cnode.descendants[i]);
+		glPopMatrix();
+	}
+
+
+}
+
 
 //-------------------------------------------------------
 
