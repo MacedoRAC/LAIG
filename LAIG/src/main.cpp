@@ -1,22 +1,31 @@
 #include <iostream>
 #include <exception>
-#include <ctime>
 
-#include "XMLScene.h"
 #include "CGFapplication.h"
 #include "GUI.h"
+#include "ANFScene.h"
+#include "Graph.h"
 
-int main(int argc, char* argv[]){
-	srand(time(NULL));
+using namespace std;
 
+
+int main(int argc, char* argv[]) {
+
+	Graph graph;
+	Graph * pgraph = new Graph();
+	pgraph = &graph;
+	char* filename = "myScene.anf";
+	if (argc >1)
+		filename = argv[1];
 	CGFapplication app = CGFapplication();
-
+	GUI * scene = new GUI();
 	try {
 		app.init(&argc, argv);
-
-		app.setScene(new XMLScene(argv[1]));
-		app.setInterface(new GUI());
-
+		ANFScene n = ANFScene(filename,pgraph);
+		scene->graph=graph;
+		app.setScene(scene);
+		app.setInterface(new CGFinterface());
+		
 		app.run();
 	}
 	catch(GLexception& ex) {
@@ -27,5 +36,6 @@ int main(int argc, char* argv[]){
 		cout << "Erro inesperado: " << ex.what();
 		return -1;
 	}
+
 	return 0;
 }
