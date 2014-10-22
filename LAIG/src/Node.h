@@ -13,13 +13,10 @@ public:
 	string id, appRef;
 	vector<string> descendants;
 	vector<Node*> descendantNode;
-	vector<vector<float>> matrix;
-	vector<Triangle> triangles;
-	vector<Rectangle> rectangles;
-	vector<Cylinder> cylinders;
-	vector<Torus> torusses;
-	vector<Sphere> spheres;
+	float matrix [16];
+	vector<Primitive*> primitives;
 	Appearance * app;
+	void draw();
 };
 
 #endif

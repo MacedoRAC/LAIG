@@ -3,6 +3,7 @@
 #include"Camera.h"
 #include <math.h>
 #include"CGFapplication.h"
+#include "Graph.h"
 
 float pi = acos(-1.0);
 float deg2rad=pi/180.0;
@@ -13,8 +14,8 @@ float ambientNull[4]={0,0,0,1};
 
 unsigned int lightsArray[8] = {GL_LIGHT0,GL_LIGHT1,GL_LIGHT2,GL_LIGHT3,GL_LIGHT4,GL_LIGHT5,GL_LIGHT6,GL_LIGHT7};
 
-void GUI::init() 
-{
+void GUI::init(){
+
 	//Setting up globals
 
 	//background
@@ -37,6 +38,7 @@ void GUI::init()
 	else if(graph.cullingOrder == "cw")
 		glFrontFace(GL_CW);
 
+
 	//Light
 	if(graph.lEnabled)
 		glEnable(GL_LIGHTING);
@@ -50,13 +52,14 @@ void GUI::init()
 		glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_TRUE);
 	else
 		glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER,GL_FALSE);
-	
+
 	//Ambient
 	float ambientLight[4] = {0,0,0,0};
 	for(int i = 0; i < 4;i++)
 		ambientLight[i] = graph.lAmbient[i];
 
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambientLight);  
+
 
 	//Drawing
 	if(graph.shading == "gouraud")
@@ -72,7 +75,6 @@ void GUI::init()
 	else if(graph.drawingMode == "point")
 		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 
-
 	for(unsigned int i = 0; i < graph.lights.size();i++){
 		Light temp = graph.lights[i];
 
@@ -80,53 +82,60 @@ void GUI::init()
 		float ambient[4] = {temp.ambient[0],temp.ambient[i],temp.ambient[2],temp.ambient[3]};
 		float diffuse[4] =  {temp.diffuse[0],temp.diffuse[i],temp.diffuse[2],temp.diffuse[3]};
 		float specular[4] =  {temp.specular[0],temp.specular[i],temp.specular[2],temp.specular[3]};
-		
-		
+
+
 		float spotDirection[3]={0,0,0};
 
-		if( temp.type == "spot"){
+		CGFlight* light;
 
+		if( temp.type.compare("spot")==0){
 			float angle = temp.angle, exponent = temp.exponent;
-			float target[3]={temp.target[0] - pos[0],temp.target[1]- pos[1],temp.target[2]- pos[2]};
+			float target[3];
+			float subtraction=0;
+			for(unsigned int k=0; k<3; k++){
+				subtraction=graph.lights[i].target[k]-pos[k];
+				target[k]=subtraction;
+			}
+
 			float unit = sqrt(target[0] * target[0] + target[1] * target[1] + target[2] * target[2]);
-			for (int i = 0; i < 3; i++) {
-				target[i] = target[i] / unit;
-				spotDirection[i] = target[i];
+			for (int j= 0; j < 3; j++) {
+				target[j] = target[j] / unit;
+				spotDirection[j] = target[j];
+
 			}
 			glLightf(lightsArray[i],GL_SPOT_EXPONENT,exponent);
 			glLightf(lightsArray[i],GL_SPOT_CUTOFF,angle);
 			glLightfv(lightsArray[i],GL_SPOT_DIRECTION,target);
+			light =new CGFlight(lightsArray[i],pos,spotDirection);
+		}else
+			light =new CGFlight(lightsArray[i],pos);
 
-		}
-
-		CGFlight* light =new CGFlight(lightsArray[i],pos,spotDirection);
 		light->setAmbient(ambient);
 		light->setDiffuse(diffuse);
 		light->setSpecular(specular);
+
 
 		if(temp.enabled)
 			light->enable();
 		else
 			light->disable();
-
 		light->update();
-
 		lights.push_back(light);
 	}
 }
 
-void GUI::display() 
-{
+void GUI::display(){
+
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	
+
 	map<string,Camera *> copyCameras = graph.cameras;
 	map<string,Camera *>::iterator it = copyCameras.find(graph.rootCamera);
-	
+
 	it->second->apply();
 	it->second->applyView();
-	
+
 	CGFapplication::activeApp->forceRefresh();
-	
+
 
 	CGFscene::activeCamera->applyView();
 
@@ -141,56 +150,52 @@ void GUI::display()
 
 	axis.draw();
 
-	drawNode(graph.rootNode);
+	//drawNode(graph.rootNode, graph.rootNode->app);
+	graph.rootNode->draw();
 
-
-	glutSwapBuffers();
+	//glutSwapBuffers();
 }
 
 
-void GUI::update(unsigned long millis){}
-
-GUI::~GUI(){}
-
-
-void GUI::drawNode(Node *node){
-
-	float m[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+void GUI::update(unsigned long millis){
+}
 
 
-	for(int i = 0; i < 4; i++){
-		for(int j = 0; j<4; j++){
-			m[i*4+j] = node->matrix[i][j];
-		}
-	}
+
+/*void GUI::drawNode(Node *node, Appearance *app){
 
 	glPushMatrix();
-	glMultMatrixf(m);
-	if(node->appRef != "inherit"){
-		node->app->app->setTexture( node->app->texture->file.c_str());
-		node->app->app->apply();
+	glMultMatrixf(node->matrix);
+
+	if(node->app)
+		app = node->app;
+	if(app)
+		app->app->apply();
+
+ 	vector<Primitive*> p;
+	p = node->primitives;
+
+	for(vector<Primitive*>::iterator pIt = p.begin(); pIt < p.end();pIt++){
+		if(app)
+			if(app->texture)
+				if(dynamic_cast<Triangle*>((*pIt))){
+					dynamic_cast<Triangle*>((*pIt))->draw(app->texture);
+				}
+				else if(dynamic_cast<Rectangle*>((*pIt))){
+					dynamic_cast<Rectangle*>((*pIt))->draw(app->texture);
+				}
+				else
+					(*pIt)->draw();
+			else
+				(*pIt)->draw();
+		else
+			(*pIt)->draw();
 	}
 
-
-	for(unsigned int i = 0; i < node->rectangles.size();i++)
-		node->rectangles[i].draw();
-
-	for(unsigned int i = 0; i < node->triangles.size();i++)
-		node->triangles[i].draw();
-
-	for(unsigned int i = 0; i < node->cylinders.size();i++)
-		node->cylinders[i].draw();
-
-	for(unsigned int i = 0; i < node->spheres.size();i++)
-		node->spheres[i].draw();
-
-	for(unsigned int i = 0; i < node->torusses.size();i++)
-		node->torusses[i].draw();
-
-	for(unsigned int i = 0; i < node->descendants.size();i++)
-		drawNode(node->descendantNode[i]);
-
+	vector<Node*> nV = node->descendantNode;
+	for(vector<Node*>::iterator nIt = nV.begin(); nIt != nV.end();nIt++)
+		drawNode(*nIt,app);
 	glPopMatrix();
 
 
-}
+}*/

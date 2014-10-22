@@ -8,7 +8,8 @@ using namespace std;
 class Light{
 public:
 	string id, type;
-	vector<float> pos, ambient, diffuse, specular, target;
+	vector<float> pos, ambient, diffuse, specular;
+	vector<float> target;
 	float angle, exponent;
 	bool enabled, marker;
 };

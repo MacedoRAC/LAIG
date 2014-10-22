@@ -2,48 +2,55 @@
 #include"CGFobject.h"
 #include<math.h>
 
-void Torus::draw(){
+void Torus::draw()
+{
 	double pi = acos(-1.0);
-	float vNormal[3];   
-    double majorStep = 2.0f*pi / slices;   
-    double minorStep = 2.0f*pi / loops;   
-    int i, j;   
-   
-    for (i=0; i<slices; ++i)    
-            {   
-            double a0 = i * majorStep;   
-            double a1 = a0 + majorStep;   
-            GLfloat x0 = (GLfloat) cos(a0);   
-            GLfloat y0 = (GLfloat) sin(a0);   
-            GLfloat x1 = (GLfloat) cos(a1);   
-            GLfloat y1 = (GLfloat) sin(a1);   
-   
-            glBegin(GL_TRIANGLE_STRIP);   
-            for (j=0; j<=loops; ++j)    
-                    {   
-                    double b = j * minorStep;   
-                    GLfloat c = (GLfloat) cos(b);   
-                    GLfloat r = inner * c + outer;   
-                    GLfloat z = inner * (GLfloat) sin(b);   
-   
-                    // First point   
-                    glTexCoord2f((float)(i)/(float)(loops), (float)(j)/(float)(slices));   
-                    vNormal[0] = x0*c;   
-                    vNormal[1] = y0*c;   
-                    vNormal[2] = z/inner;   
-                    //gltNormalizeVector(vNormal);   
-                    glNormal3fv(vNormal);   
-                    glVertex3f(x0*r, y0*r, z);   
-   
-                    glTexCoord2f((float)(i+1)/(float)(loops), (float)(j)/(float)(slices));   
-                    vNormal[0] = x1*c;   
-                    vNormal[1] = y1*c;   
-                    vNormal[2] = z/inner;   
-					glNormal3f(vNormal[0],vNormal[1],vNormal[2]);   
-                    glVertex3f(x1*r, y1*r, z);   
-                    }   
-            glEnd();   
-            }   
+	float vectorNormal[3];
+	double majorStep = 2.0f*pi / slices;
+	double minorStep = 2.0f*pi / loops;
+	vector<float> x, y, z, r, c;
+
+	for (int i=0; i<slices; i++) //calcula e guarda todas as coordenadas e angulos para depois desenhar
+	{
+		double a0 = i * majorStep;
+		x.push_back(cos(a0));
+		y.push_back(sin(a0));
+		for (int j=0; j<=loops; ++j){
+			double b = j * minorStep;
+			c.push_back(cos(b));
+			r.push_back(inner * c[j] + outer);
+			z.push_back(inner *sin(b));	
+		}
+	} 
+	
+	//desenha o torus
+	for (int i=0; i<slices; ++i){
+		glBegin(GL_TRIANGLE_STRIP);
+		for (int j=0; j<=loops; ++j){
+			glTexCoord2f((float)(i)/(loops), (float)(j)/(slices));
+			vectorNormal[0] = x[i]*c[j];
+			vectorNormal[1] = y[i]*c[j];
+			vectorNormal[2] = z[j]/inner;
+			glNormal3fv(vectorNormal);
+			glVertex3f(x[i]*r[j], y[i]*r[j], z[j]);
+			
+			glTexCoord2f((float)(i+1)/(loops), (float)(j)/(slices));
+			if(i+1 < slices){
+				vectorNormal[0] = x[i+1]*c[j];
+				vectorNormal[1] = y[i+1]*c[j];
+				vectorNormal[2] = z[j]/inner;
+				glNormal3f(vectorNormal[0],vectorNormal[1],vectorNormal[2]);
+				glVertex3f(x[i+1]*r[j], y[i+1]*r[j], z[j]);
+			}else{
+				vectorNormal[0] = x[0]*c[j];
+				vectorNormal[1] = y[0]*c[j];
+				vectorNormal[2] = z[j]/inner;
+				glNormal3f(vectorNormal[0],vectorNormal[1],vectorNormal[2]);
+				glVertex3f(x[0]*r[j], y[0]*r[j], z[j]);
+			}
+		}
+		glEnd();
+	}
 }
 
 void Sphere:: draw(){
@@ -93,20 +100,82 @@ void Cylinder:: draw(){
 	gluDeleteQuadric(disk1);
 }
 
-void Rectangle:: draw(){
-
-	glRectd(x1, y1, x2, y2);
-
-}
-
-void Triangle:: draw(){
+void Triangle::draw(){
 
 	glBegin(GL_TRIANGLES);
-	//glTexCoord2f(0,0);
-	glVertex3f(x1, y1, z1);
-	//glTexCoord2f(t->getTexLengthS(), t->getTexLengthT());
-	glVertex3f(x2, y2, z2);
-	//glTexCoord2f(,0);
-	glVertex3f(x3, y3, z3);
+		glVertex3f(x1,y1,z1);
+		glVertex3f(x2,y2,z2);
+		glVertex3f(x3,y3,z3);
+	glEnd();
+}
+
+void Triangle::draw(Texture * text)
+{
+	float width = text->texlength_S;
+	float height = text->texlength_T;
+	float lengthText = sqrt( (x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)+(z1-z2)*(z1-z2));
+	float angle = acos( (x3-x1)*(y2-y1)*(z3-z1)+(x2-x1)*(y3-y1)*(z2-z1));
+	float heighText = sin( angle)*sqrt( (x1-x3)*(x1-x3)+(y1-y3)*(y1-y3)+(z1-z3)*(z1-z3));
+
+	float deltaX = lengthText/width;
+	float deltaY = heighText/height;
+
+	glBegin(GL_TRIANGLES);
+		glNormal3f(x1, y1, 1);
+		glTexCoord2f(0,0);
+		glVertex3f(x1,y1,z1);
+
+		glNormal3f(x2, y2,1);
+		glTexCoord2f(deltaX,0);
+		glVertex3f(x2,y2,z2);
+
+		glNormal3f(z3,y3,1);
+		glTexCoord2f(deltaX,deltaY);
+		glVertex3f(x3,y3,z3);
+	glEnd();
+}
+
+void Rectangle::draw(Texture * text){
+
+	float width = text->texlength_S;
+	float height = text->texlength_T;
+	float lengthText = x2-x1;
+	float heightText = y2-y1;
+	float deltaX = lengthText / width;
+	float deltaY = heightText / height;
+
+	glBegin(GL_QUADS);
+	glNormal3f(0,0,1);
+
+	glTexCoord2f(0,0);
+	glVertex2f(x1,y1);
+
+	glTexCoord2f(0,deltaY);
+	glVertex2f(x2,y1);
+
+	glTexCoord2f(deltaX,deltaY);
+	glVertex2f(x2,y2);
+
+	glTexCoord2f(deltaX,0);
+	glVertex2f(x1,y2);
+	glEnd();
+}
+
+void Rectangle::draw(){
+
+	glBegin(GL_QUADS);
+		glNormal3f(0,0,1);
+
+		glTexCoord2f(0,0);
+		glVertex2f(x1,y1);
+
+		glTexCoord2f(1,0);
+		glVertex2f(x2,y1);
+
+		glTexCoord2f(1,1);
+		glVertex2f(x2,y2);
+
+		glTexCoord2f(0,1);
+		glVertex2f(x1,y2);
 	glEnd();
 }

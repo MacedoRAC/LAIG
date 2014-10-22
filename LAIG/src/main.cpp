@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 	Graph graph;
 	Graph * pgraph = new Graph();
 	pgraph = &graph;
-	char* filename = "myScene.anf";
+	char* filename = "airplane.xml";
 	if (argc >1)
 		filename = argv[1];
 	CGFapplication app = CGFapplication();
@@ -22,6 +22,7 @@ int main(int argc, char* argv[]) {
 	try {
 		app.init(&argc, argv);
 		ANFScene n = ANFScene(filename,pgraph);
+		printf("\n\n\n ja leu o ANF \n\n\n");
 		scene->graph=graph;
 		app.setScene(scene);
 		app.setInterface(new CGFinterface());

@@ -5,16 +5,18 @@ void Graph:: updateRootNode(){
 }
 
 void Graph:: updateDescendantNode(){
-	map<string,Node>::iterator it = nodes.begin();
-	vector<Node*> temp;
-	
-	while(it != nodes.end()){
-		
-		for (unsigned int i=0 ; i<it->second.descendants.size();i++)
-			temp.push_back(&nodes.find(it->second.descendants[i])->second);
-		
-		it->second.descendantNode=temp;
 
-		it++;
+	map<string,Node>::iterator it;
+	string temp;
+	for(it = nodes.begin(); it != nodes.end(); it++) {
+		vector<Node*>tmp;
+		vector<string> desc = it->second.descendants;
+		for(vector<string>::iterator it2 = desc.begin(); it2 != desc.end();it2++)
+		{
+			temp = nodes.find(*it2)->first;
+			tmp.push_back(&nodes.find((*it2))->second);
+		}
+		it->second.descendantNode = tmp;
 	}
+
 }

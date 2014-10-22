@@ -3,6 +3,7 @@
 
 #include"CGFscene.h"
 #include"Graph.h"
+#include"Primitive.h"
 #include<vector>
 
 class GUI: public CGFscene{
@@ -15,7 +16,7 @@ public:
 	void init();
 	void display();
 	void update(unsigned long millis);
-	void drawNode(Node *n);
+	//void drawNode(Node *n, Appearance *app);
 
 };
 

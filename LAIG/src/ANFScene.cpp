@@ -1,6 +1,7 @@
-#include"ANFScene.h"
+#include "CGFapplication.h"
+#include "ANFScene.h"
 //#include "GL/glu.h"
-#include"CGFapplication"
+
 
 ANFScene::ANFScene(char *filename, Graph* graph)
 {
@@ -57,10 +58,10 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			{
 				graph->drawingMode=mode;
 				graph->shading=shading;
-				graph->background[0]=r;
-				graph->background[1]=g;
-				graph->background[2]=b;
-				graph->background[3]=a;
+				graph->background.push_back(r);
+				graph->background.push_back(g);
+				graph->background.push_back(b);
+				graph->background.push_back(a);
 				printf("  Drawing attributes: %s %s\n , background %f %f %f %f \n", mode, shading, r ,g ,b ,a);
 			}
 			else
@@ -122,10 +123,10 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				graph->lDoubleSided=doublesided;
 				graph->lLocal=local;
 				graph->lEnabled=enabled;
-				graph->lAmbient[0]=r;
-				graph->lAmbient[1]=g;
-				graph->lAmbient[2]=b;
-				graph->lAmbient[3]=a;
+				graph->lAmbient.push_back(r);
+				graph->lAmbient.push_back(g);
+				graph->lAmbient.push_back(b);
+				graph->lAmbient.push_back(a);
 
 				printf("	Lightning values: doublesided: %d  , local: %d , enabled:  %d \n ambient: %f %f %f %f \n",doublesided,local,enabled,r,g,b,a);
 			}
@@ -152,7 +153,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 		TiXmlElement *cam=camerasElement->FirstChildElement("ortho");
 
 		while(cam){
-			Orthogonal* orthoCam;
+			Orthogonal* orthoCam = new Orthogonal();
 			char * camID = (char*)cam->Attribute("id");     
 			char * direction = (char *) cam->Attribute("direction");
 			char * valstringNear = (char *) cam->Attribute("near");
@@ -184,7 +185,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 		//Perspective Cameras
 		cam = camerasElement->FirstChildElement("perspective");
 		while(cam){
-			Perspective* perspCam;
+			Perspective* perspCam = new Perspective();
 			char * camID = (char*)cam->Attribute("id");     
 			char * valstringNear = (char *) cam->Attribute("near");
 			char * valstringFar = (char *) cam->Attribute("far");
@@ -200,12 +201,12 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				perspCam->near=near;
 				perspCam->far=far;
 				perspCam->angle=angle;
-				perspCam->pos[0]=posX;
-				perspCam->pos[1]=posY;
-				perspCam->pos[2]=posZ;
-				perspCam->target[0]=targetX;
-				perspCam->target[1]=targetY;
-				perspCam->target[2]=targetZ;
+				perspCam->pos.push_back(posX);
+				perspCam->pos.push_back(posY);
+				perspCam->pos.push_back(posZ);
+				perspCam->target.push_back(targetX);
+				perspCam->target.push_back(targetY);
+				perspCam->target.push_back(targetZ);
 			}
 			
 			graph->cameras[perspCam->id]=perspCam;
@@ -233,7 +234,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			int enabled,marker;
 			float posX,posY,posZ;
 			char * id = (char*) light->Attribute("id");
-			char * type = (char*) light->Attribute("type");
+			string type = light->Attribute("type");
 			char * valstringEnabled = (char*) light->Attribute("enabled");			
 			char * valstringMarker = (char*) light->Attribute("marker");
 			char * pos = (char*) light->Attribute("pos");
@@ -256,12 +257,12 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			newLight.type=type;
 			newLight.enabled=enabled;
 			newLight.marker=marker;
-			newLight.pos[0]=posX;
-			newLight.pos[1]=posY;
-			newLight.pos[2]=posZ;
+			newLight.pos.push_back(posX);
+			newLight.pos.push_back(posY);
+			newLight.pos.push_back(posZ);
 
 
-			if(type == "spot")
+			if(type.compare("spot") == 0)
 			{
 				float angle, exponent, targetX,targetY,targetZ;
 				char* valstringAngle = (char*) light->Attribute("angle");
@@ -272,19 +273,19 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				{
 					newLight.angle=angle;
 					newLight.exponent=exponent;
-					newLight.target[0]=targetX;
-					newLight.target[1]=targetY;
-					newLight.target[2]=targetZ;
+					newLight.target.push_back(targetX);
+					newLight.target.push_back(targetY);
+					newLight.target.push_back(targetZ);
 				}
 			}
 
-			TiXmlElement *lightComponent = light->FirstChildElement();//
+			TiXmlElement *lightComponent = light->FirstChildElement("component");
 
 			//initialize all light components with zero
-			newLight.ambient[0]=0;
-			newLight.ambient[1]=0;
-			newLight.ambient[2]=0;
-			newLight.ambient[3]=0;
+			newLight.ambient.push_back(0);
+			newLight.ambient.push_back(0);
+			newLight.ambient.push_back(0);
+			newLight.ambient.push_back(0);
 			newLight.diffuse=newLight.ambient;
 			newLight.specular=newLight.ambient;
 
@@ -342,7 +343,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 		printf("Text block not found!\n");
 	else
 	{
-		TiXmlElement *textures=textsElement->FirstChildElement();
+		TiXmlElement *textures=textsElement->FirstChildElement("texture");
 
 		while(textures){
 
@@ -383,7 +384,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			float shininess = 0;
 			char * id = (char*) appearances->Attribute("id");
 			char * shininessString = (char*) appearances->Attribute("shininess");
-			char * textureref = (char*) appearances->Attribute("textureref");			
+			string textureref = appearances->Attribute("textureref");			
 
 			sscanf(shininessString,"%f",&shininess);
 
@@ -392,39 +393,39 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			newAppearance.shininess=shininess;
 			newAppearance.textureref=textureref;
 
-			TiXmlElement * appearanceComponent = appearances->FirstChildElement();
+			TiXmlElement * appearanceComponent = appearances->FirstChildElement("component");
 
 			//initialize all light components with zero
-			newAppearance.ambient_comp[0]=0;
-			newAppearance.ambient_comp[1]=0;
-			newAppearance.ambient_comp[2]=0;
-			newAppearance.ambient_comp[3]=0;
+			newAppearance.ambient_comp.push_back(0);
+			newAppearance.ambient_comp.push_back(0);
+			newAppearance.ambient_comp.push_back(0);
+			newAppearance.ambient_comp.push_back(0);
 			newAppearance.diffuse_comp=newAppearance.ambient_comp;
 			newAppearance.specular_comp=newAppearance.ambient_comp;
 
 			while(appearanceComponent)
 			{
 				float r,g,b,a;
-				char * type = (char*) appearanceComponent->Attribute("type");
+				string type = appearanceComponent->Attribute("type");
 				char * valString = (char*) appearanceComponent->Attribute("value");
 
 				if(sscanf(valString,"%f %f %f %f",&r,&g,&b,&a) == 4)
 				{
-					if(type == "ambient")
+					if(type.compare("ambient")==0)
 					{
 						newAppearance.ambient_comp[0]=r;
 						newAppearance.ambient_comp[1]=g;
 						newAppearance.ambient_comp[2]=b;
 						newAppearance.ambient_comp[3]=a;
 					}
-					else if(type == "diffuse")
+					else if(type.compare("diffuse")==0)
 					{
 						newAppearance.diffuse_comp[0]=r;
 						newAppearance.diffuse_comp[1]=g;
 						newAppearance.diffuse_comp[2]=b;
 						newAppearance.diffuse_comp[3]=a;
 					}
-					else if(type == "specular")
+					else if(type.compare("specular")==0)
 					{
 						newAppearance.specular_comp[0]=r;
 						newAppearance.specular_comp[1]=g;
@@ -434,11 +435,11 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 				}
 
-				for(int j= 0 ; j < graph->textures.size();j++){
+				for(unsigned int j= 0 ; j < graph->textures.size();j++){
 				
-					if (textureref == graph->textures[j].id)
+					if (textureref.compare(graph->textures[j].id)==0)
 					{
-						Texture * text;
+						Texture * text = new Texture();
 						(*text) = graph->textures[j];
 						newAppearance.texture=text;
 					}
@@ -467,22 +468,21 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 		graph->rootId=rootID;
 		char *prefix="  -";
 		
-		TiXmlElement *node=graphElement->FirstChildElement();
+		TiXmlElement *node=graphElement->FirstChildElement("node");
 
 		while (node)
 		{
-			Node node1;
+			Node node1 = Node();
 			node1.id = node->Attribute("id");
-
 			printf("Node id '%s' - Descendants:\n",node->Attribute("id"));
 			
-			TiXmlElement * transforms = node->FirstChildElement();
+			TiXmlElement * transforms = node->FirstChildElement("transforms");
 			
 			if (transforms == NULL)
 				printf("Transforms block not found!\n");
 			else 
 			{
-				TiXmlElement * tranformation = transforms->FirstChildElement();
+				TiXmlElement * tranformation = transforms->FirstChildElement("transform");
 
 				char * valString = NULL, * type = NULL;
 				float m[4][4];
@@ -500,15 +500,14 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 						}
 					}else if(type == "rotate"){
 						float angle;
-						char * eixo = NULL;
-						eixo = (char *) tranformation->Attribute("axis");
+						char * axis = (char *) tranformation->Attribute("axis");
 						valString = (char*) tranformation->Attribute("angle");
 						if(sscanf(valString,"%f",&angle) == 1){
-							if(eixo[0] == 'x')
+							if(axis[0] == 'x')
 								glRotatef(angle,1,0,0);
-							else if(eixo[0] == 'y')
+							else if(axis[0] == 'y')
 								glRotatef(angle,0,1,0);
-							else if(eixo[0] == 'z')
+							else if(axis[0] == 'z')
 								glRotatef(angle,0,0,1);
 							else
 								printf("erro na rotação \n");
@@ -526,40 +525,40 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 				glGetFloatv(GL_MODELVIEW_MATRIX, &m[0][0]);
 
-				node1.matrix.push_back({m[0][0], m[0][1], m[0][2], m[0][3]});
-				node1.matrix.push_back({m[1][0], m[1][1], m[1][2], m[1][3]});
-				node1.matrix.push_back({m[2][0], m[2][1], m[2][2], m[2][3]});
-				node1.matrix.push_back({m[3][0], m[3][1], m[3][2], m[3][3]});
+				unsigned int a=0;
+				for(unsigned int i=0; i<4; i++){
+					for(unsigned int j=0; j<4; j++){
+						node1.matrix[a]=m[i][j];
+						a++;  // a variavel a nao precisa de ser verificada por um ciclo uma vez que ambos ciclos, em conjunto o fazem
+					}
+				}
 			}
 
-			TiXmlElement * appearanceref = transforms->NextSiblingElement();
+			TiXmlElement * appearanceref = node->FirstChildElement("appearanceref");
 
 			if (appearanceref == NULL)
 				printf("Appearance block not found!\n");
 			else{
-				char* id = (char*) appearanceref->Attribute("id");
-				node1.id=id;
-				if(id != "inherit"){
-					Appearance *app;
+				string id = (string) appearanceref->Attribute("id");
+				node1.appRef=id;
+				if(id.compare("inherit") != 0){
+					Appearance *app = new Appearance();
 					(*app) = graph->appearances.find(id)->second;
-				
 					node1.app=app;
 				}
 			}
-
 			//Primitives
-			TiXmlElement *primitives = appearanceref->NextSiblingElement();
-
+			TiXmlElement *primitives = node->FirstChildElement("primitives");
 			if (primitives == NULL)
 				printf("Primitives block not found!\n");
 			else 
 			{
 				//Rectangles
 				TiXmlElement *primitivesDef = primitives->FirstChildElement("rectangle");	
-				Rectangle rect;
+				Rectangle rect = Rectangle();
 				
 				while(primitivesDef){
-					printf("  - Type id: '%s'\n", primitivesDef->Attribute("type"));
+					rect.type="rectangle";
 
 					char* valString1 = (char *) primitivesDef->Attribute("xy1");
 					char* valString2 = (char *) primitivesDef->Attribute("xy2");
@@ -570,7 +569,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 						rect.y1=y1;
 						rect.y2=y2;
 
-						node1.rectangles.push_back(rect);
+						node1.primitives.push_back(&rect);
 					}
 
 
@@ -579,12 +578,11 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 				//Triangles
 				primitivesDef = primitives->FirstChildElement("triangle");
+				Triangle tria = Triangle();
 
-				while(primitivesDef)
-				{
-					printf("  - Type id: '%s'\n", primitivesDef->Attribute("type"));
-					
-					Triangle tria;
+				while(primitivesDef){
+					tria.type="triangle";
+
 					float x1,x2,x3,y1,y2,y3,z1,z2,z3;
 					char * valString1 = (char *) primitivesDef->Attribute("xyz1");
 					char * valString2 = (char *) primitivesDef->Attribute("xyz2");
@@ -600,7 +598,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 						tria.y3=y3;
 						tria.z3=z3;
 
-						node1.triangles.push_back(tria);
+						node1.primitives.push_back(&tria);
 					}
 
 					primitivesDef = primitivesDef->NextSiblingElement("triangle");
@@ -608,9 +606,11 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 				//Cylinder
 				primitivesDef = primitives->FirstChildElement("cylinder");
+				Cylinder cyl = Cylinder();
 
 				while(primitivesDef){
-					Cylinder cyl;
+					cyl.type="cylinder";
+
 					char* valString1 = (char *) primitivesDef->Attribute("base");
 					char* valString2 = (char *) primitivesDef->Attribute("top");
 					char* stringHeigh = (char *) primitivesDef->Attribute("height");
@@ -628,19 +628,18 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 							cyl.slices=slices;
 							cyl.stacks=stacks;
 
-							node1.cylinders.push_back(cyl);
+							node1.primitives.push_back(&cyl);
 					}
 					primitivesDef = primitivesDef->NextSiblingElement("cylinder");
 				}
 
 				//Sphere
 				primitivesDef = primitives->FirstChildElement("sphere");
+				Sphere sphere = Sphere();
 
-				while(primitivesDef)
-				{
-					printf("  - Type id: '%s'\n", primitivesDef->Attribute("type"));
+				while(primitivesDef){
+					sphere.type="sphere";
 
-					Sphere sphere;
 					char* valString1 = (char *) primitivesDef->Attribute("radius");
 					char* stringSlices = (char *) primitivesDef->Attribute("slices");
 					char* stringStacks = (char *) primitivesDef->Attribute("stacks");
@@ -652,20 +651,18 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 						sphere.slices=slices;
 						sphere.stacks=stacks;
 						
-						node1.spheres.push_back(sphere);
+						node1.primitives.push_back(&sphere);
 					}
-
 					primitivesDef = primitivesDef->NextSiblingElement("sphere");
 				}
 
 				//Torus
 				primitivesDef = primitives->FirstChildElement("torus");
+				Torus torus = Torus();
 
-				while(primitivesDef)
-				{
-					printf("  - Type id: '%s'\n", primitivesDef->Attribute("type"));
+				while(primitivesDef){
+					torus.type="torus";
 
-					Torus torus;
 					char* valString1 = (char *) primitivesDef->Attribute("inner");
 					char* valString2 = (char *) primitivesDef->Attribute("outer");
 					char* stringSlices = (char *) primitivesDef->Attribute("slices");
@@ -679,7 +676,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 						torus.slices=slices;
 						torus.loops=loops;
 						
-						node1.torusses.push_back(torus);
+						node1.primitives.push_back(&torus);
 					}
 
 					primitivesDef = primitivesDef->NextSiblingElement("torus");
@@ -689,24 +686,20 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			}
 
 			//Descendants
-			TiXmlElement *descendants=primitives->NextSiblingElement();
-
+			TiXmlElement *descendants=node->FirstChildElement("descendants");
 			if(descendants == NULL)
 				printf("Descendants block not found!\n");
 			else
 			{
-				TiXmlElement *child =descendants->FirstChildElement();
-
+				TiXmlElement *child =descendants->FirstChildElement("noderef");
 				if(child != NULL)
 					while (child){
 						char* nodeChild = (char *) child->Attribute("id");
-
+						printf("Child: %s\n", nodeChild);
 						node1.descendants.push_back(nodeChild);
-
 						child = child->NextSiblingElement();
 					}
 			}
-			
 			node=node->NextSiblingElement();
 			graph->nodes[node1.id]=node1;
 		}
@@ -714,6 +707,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 	graph->updateDescendantNode();
 	graph->updateRootNode();
+
 }
 
 ANFScene::~ANFScene()

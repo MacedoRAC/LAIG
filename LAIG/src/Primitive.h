@@ -1,30 +1,36 @@
 #ifndef PRIMITIVE_H
 #define PRIMITIVE_H
 
-#include<string>
+#include <string>
+#include<vector>
+#include "Texture.h"
 
 using namespace std;
 
 class Primitive{
 public:
+	Primitive(void){};
 	string type;
+	virtual void draw(){};
 };
 
-class Rectangle{
+class Rectangle : public Primitive{
 public:
 	float x1, x2, y1, y2;
 
 	void draw();
+	void draw(Texture * text);
 };
 
-class Triangle{
+class Triangle : public Primitive{
 public:
 	float x1, x2, x3, y1, y2, y3, z1, z2, z3;
 
 	void draw();
+	void draw(Texture * text);
 };
 
-class Cylinder{
+class Cylinder : public Primitive{
 public:
 	float base, top, height;
 	int slices, stacks;
@@ -32,7 +38,7 @@ public:
 	void draw();
 };
 
-class Torus{
+class Torus : public Primitive{
 public:
 	int slices, loops;
 	bool smooth;
@@ -41,7 +47,7 @@ public:
 	void draw();
 };
 
-class Sphere{
+class Sphere : public Primitive{
 public:
 	float radius;
 	int slices, stacks;
