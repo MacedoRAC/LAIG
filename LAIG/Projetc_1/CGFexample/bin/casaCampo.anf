@@ -1,0 +1,584 @@
+<anf>
+    <globals>
+      
+        <drawing mode="fill" shading="gouraud" background="0 0 0 1" />
+ 
+        <culling face="back" order="ccw" />
+ 
+        <!-- Parametros de iluminacao; seguem os parametros do OpenGL  -->
+        <lighting doublesided="false" local="true" enabled="true" ambient="0.3 0.3 0.3 1" />
+ 
+    </globals>
+    
+    <!-- bloco de camaras: o atributo "initial" identifica a camara/ponto de vista inicial, que tem de existir -->
+    <cameras initial="camera1" >
+
+        <perspective id="camera1" near="0.1" far="100" angle="45" pos="10 0 20" target="0 0 0" />
+        
+        <ortho id="eixoX" direction="x" near="-10" far="20" left="-5" right="10" top="10" bottom="-5" />
+        <ortho id="eixoY" direction="y" near="-10" far="20" left="-5" right="10" top="10" bottom="-5" />
+        <ortho id="eixoZ" direction="z" near="-10" far="20" left="-5" right="10" top="10" bottom="-5" />
+
+    </cameras>
+  
+
+    <!-- bloco de luzes -->
+    <lights>
+            <light id="luz1" type="omni" enabled="true" marker="true" pos="0 10 0" >
+                <component type="ambient" value="1 1 1 1" />
+                <component type="diffuse" value="1 1 1 1" />
+                <component type="specular" value="1 1 1 1" />
+
+            </light>
+
+            <light id="foco" type="spot" enabled="false" marker="true" pos="0 10 0" target="0 0 0"  
+                angle="20" exponent="20" >
+
+                <component type="ambient" value="0.6 0.6 0.6 1" />
+                <component type="diffuse" value="0.6 0.6 0.6 1" />
+                <component type="specular" value="0.6 0.6 0.6 1" />
+
+            </light>
+    </lights>
+
+    <textures>       
+        <!--  <texture id="court" file="court.jpg" texlength_s="1" texlength_t="1" />-->
+    </textures>
+
+    <!-- bloco de materiais; -->
+    <appearances>
+       <appearance id="courtapp" shininess="50" >
+                <component type="ambient" value="0.4 0.4 0.4 1" />
+                <component type="diffuse" value="0.3 0.3 0.3 1" />
+                <component type="specular" value="0.5 0.5 0.5 1" />
+        </appearance>
+        
+        <appearance id="net" shininess="10" >
+                <component type="ambient" value="0.4 0.4 0.4 1" />
+                <component type="diffuse" value="0.3 0.3 0.3 1" />
+                <component type="specular" value="0.5 0.5 0.5 1" />
+        </appearance>
+        
+        <appearance id="ball" shininess="10" >
+                <component type="ambient" value="0.5 0.5 0.5 1" />
+                <component type="diffuse" value="0.6 0.6 0.6 1" />
+                <component type="specular" value="0.1 0.1 0.1 1" />
+        </appearance>
+    </appearances>
+
+    <graph rootid="cena">
+
+        <node id="cena">
+            <transforms>
+            </transforms>
+     
+            <appearanceref id="inherit" />
+ 
+            <primitives>         
+            </primitives>
+               
+            <descendants>
+                <noderef id="court" />
+				<noderef id="tree" />
+				<noderef id="tree1" />
+				<noderef id="tree2" />
+				<noderef id="tree3" />
+				<noderef id="tree4" />
+				<noderef id="tree5" />
+				<noderef id="tree6" />
+				<noderef id="tree7" />
+				<noderef id="tree8" />
+				<noderef id="tree9" />
+				<noderef id="tree10" />
+				<noderef id="tree11" />
+				<noderef id="tree12" />
+                <noderef id="house" />
+				<noderef id="treebody" />
+            </descendants>
+        </node>
+        
+        <node id="court">
+            <transforms>
+                <transform type="translate" to="0 0 0"/>
+                <transform type="rotate" axis="x" angle="-90" />
+                <transform type="translate" to="0 -30 0"/>
+            </transforms>
+
+            <appearanceref id="courtapp" />
+ 
+            <primitives>         
+                <rectangle xy1="0 0" xy2="30 30" />
+             </primitives>
+               
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="house">
+            <transforms>
+                <transform type="translate" to="20 0 5"/>
+            </transforms>
+
+            <appearanceref id="inherit" />
+
+            <primitives>
+            </primitives>
+
+            <descendants>
+                <noderef id="housebody" />
+                <noderef id="houseroof" />
+            </descendants>
+        </node>
+
+
+		<node id="houseroof">
+			<transforms>
+				<transform type="translate" to="2.5 5 4"/>
+				<transform type="rotate" axis="x" angle="-90" />
+			</transforms>
+
+			<appearanceref id="inherit" />
+
+			<primitives>
+				<cylinder base="4" top="0" height="3" slices="25" stacks="25" />
+			</primitives>
+
+			<descendants>
+			</descendants>
+		</node>
+
+
+        <node id="housebody">
+            <transforms>
+                <transform type="translate" to="0 0 1.5"/>
+            </transforms>
+
+            <appearanceref id="inherit" />
+
+            <primitives>
+            </primitives>
+
+            <descendants>
+                <noderef id="rightwall" />
+                <noderef id="leftwall" />
+                <noderef id="frontwall" />
+                <noderef id="backwall" />
+                <noderef id="door" />
+            </descendants>
+        </node>
+
+
+
+	<node id="door">
+		<transforms>
+			<transform type="scale" factor="0.3 0.6 1" />
+			<transform type="translate" to="2 0 5.2"/>
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+			<rectangle xy1="0 0" xy2="5 5" />
+		</primitives>
+
+		<descendants>
+		</descendants>
+	</node>
+
+
+
+	<node id="leftwall">
+		<transforms>
+			<transform type="translate" to="0 0 5"/>
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+			<rectangle xy1="0 0" xy2="5 5" />
+		</primitives>
+
+		<descendants>
+		</descendants>
+	</node>
+
+
+	<node id="rightwall">
+		<transforms>
+			<transform type="rotate" axis="y" angle="180"/>
+			<transform type="translate" to="-5 0 0" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+			<rectangle xy1="0 0" xy2="5 5" />
+		</primitives>
+
+		<descendants>
+		</descendants>
+	</node>
+
+
+	<node id="frontwall">
+		<transforms>
+			<transform type="rotate" axis="y" angle="90" />
+			<transform type="translate" to="-5 0 5"/>
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+			<rectangle xy1="0 0" xy2="5 5" />
+		</primitives>
+
+		<descendants>
+		</descendants>
+	</node>
+
+
+	<node id="backwall">
+		<transforms>
+			<transform type="rotate" axis="y" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+			<rectangle xy1="0 0" xy2="5 5" />
+		</primitives>
+
+		<descendants>
+		</descendants>
+	</node>
+
+
+
+
+	<node id="tree">
+		<transforms>
+			<transform type="translate" to="10 0 5"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+	<node id="tree1">
+		<transforms>
+			<transform type="translate" to="10 0 10"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+
+	<node id="tree2">
+		<transforms>
+			<transform type="translate" to="15 0 5"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+
+	<node id="tree3">
+		<transforms>
+			<transform type="translate" to="15 0 10"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+
+	<node id="tree4">
+		<transforms>
+			<transform type="translate" to="15 0 15"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+	<node id="tree5">
+		<transforms>
+			<transform type="translate" to="10 0 15"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+	<node id="tree6">
+		<transforms>
+			<transform type="translate" to="20 0 15"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+	<node id="tree7">
+		<transforms>
+			<transform type="translate" to="15 0 20"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+	<node id="tree8">
+		<transforms>
+			<transform type="translate" to="10 0 20"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+	<node id="tree9">
+		<transforms>
+			<transform type="translate" to="10 0 25"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+	<node id="tree10">
+		<transforms>
+			<transform type="translate" to="15 0 25"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+
+	<node id="tree11">
+		<transforms>
+			<transform type="translate" to="20 0 20"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+
+	<node id="tree12">
+		<transforms>
+			<transform type="translate" to="20 0 25"/>
+			<transform type="rotate" axis="x" angle="-90" />
+		</transforms>
+
+		<appearanceref id="inherit" />
+
+		<primitives>
+		</primitives>
+
+		<descendants>
+			<noderef id="treebody" />
+			<noderef id="treeleaves" />
+		</descendants>
+	</node>
+
+        <node id="treeleaves"> 
+            <transforms>
+                <transform type="translate" to="0 0 1.5"/>
+            </transforms>
+
+            <appearanceref id="inherit" />
+
+            <primitives>
+                <cylinder base="1" top="0" height="4" slices="25" stacks="25" />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="treebody">
+            <transforms>
+
+            </transforms>
+
+            <appearanceref id="inherit" />
+ 
+            <primitives>
+                <cylinder base="0.5" top="0.5" height="3" slices="25" stacks="25" />
+
+             </primitives>
+               
+            <descendants>
+            </descendants>
+        </node>
+
+
+       <node id="sidenet2">
+            <transforms>
+                <transform type="translate" to="-7.5 0 0"/>
+                <transform type="rotate" axis="y" angle="270" />
+                <transform type="translate" to="-1 0 0"/>
+            </transforms>
+     
+            <appearanceref id="inherit" />
+ 
+            <primitives>         
+                <rectangle xy1="0 0" xy2="15 5" />
+             </primitives>
+               
+            <descendants>
+            </descendants>
+        </node>
+        
+        <node id="sidesidenet1">
+            <transforms>
+                <transform type="translate" to="0 -1 0"/>
+                <transform type="rotate" axis="z" angle="90" />
+                <transform type="translate" to="0 0 7.5"/>
+            </transforms>
+     
+            <appearanceref id="inherit" />
+ 
+            <primitives>         
+                <rectangle xy1="0 0" xy2="5 2" />
+             </primitives>
+               
+            <descendants>
+            </descendants>
+        </node>
+        
+        <node id="sidesidenet2">
+            <transforms>
+                <transform type="translate" to="0 -1 0"/>
+                <transform type="rotate" axis="y" angle="180" />
+                <transform type="rotate" axis="z" angle="-90" />
+                <transform type="translate" to="0 0 -7.5"/>
+            </transforms>
+     
+            <appearanceref id="inherit" />
+ 
+            <primitives>         
+                <rectangle xy1="0 0" xy2="5 2" />
+             </primitives>
+               
+            <descendants>
+            </descendants>
+        </node>
+        
+        <node id="scoreboard">
+            <transforms>
+                <transform type="translate" to="-7.5 3 -10"/>
+            </transforms>
+     
+            <appearanceref id="inherit" />
+ 
+            <primitives>         
+                <rectangle xy1="0 0" xy2="15 15" />
+             </primitives>
+               
+            <descendants>
+            </descendants>
+        </node>
+        
+    </graph>
+</anf>
