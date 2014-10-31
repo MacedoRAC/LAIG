@@ -1,0 +1,24 @@
+erros:
+
+transformçoes
+	comparing type with transformation -> resolvido com strcmp
+
+primitivas
+	erros de inicializaçao de apontadores
+
+cameras e globals
+	bem lidas, mas nao estavam a ser processadas devidamente
+
+luzes
+	comparing type with lights's type -> resolvido com strcmp aswell
+
+appearances
+	desenha appearances
+	nao carrega as texturas
+
+
+Outras:
+	ANFScene -> otimização de codigo a nivel de ciclos
+
+Texturas
+	faltava fazer o load das texturas
