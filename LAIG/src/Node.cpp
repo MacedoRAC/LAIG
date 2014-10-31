@@ -8,6 +8,7 @@ void Node::draw(Appearance* appea){
 
 	if(app)
 		appea = app;
+	
 	if(appea)
 		appea->app->apply();
 
@@ -15,7 +16,13 @@ void Node::draw(Appearance* appea){
 	
 
 	for(vector<Primitive*>::iterator pIt = p.begin(); pIt < p.end(); pIt++){
-		(*pIt)->draw();
+		if(appea){
+			if(appea->textureref != "")
+				(*pIt)->draw(appea->texture);
+			else
+				(*pIt)->draw();
+		}else
+			(*pIt)->draw();
 	}
 
 	vector<Node*> nV = descendantNode;

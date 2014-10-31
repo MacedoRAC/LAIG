@@ -13,6 +13,7 @@ public:
 	Primitive(string type);
 	string type;
 	virtual void draw(){};
+	virtual void draw(Texture* text){}; 
 };
 
 class Rectangle : public Primitive{
@@ -39,6 +40,7 @@ public:
 	int slices, stacks;
 
 	void draw();
+	void draw(Texture * text);
 	Cylinder(string type, float base, float top, float height, int slices, int stacks);
 };
 
@@ -49,6 +51,7 @@ public:
 	float inner, outer;
 
 	void draw();
+	void draw(Texture * text);
 	Torus(string type, int slices, int loops, bool smooth, float inner, float outer);
 };
 
@@ -58,6 +61,7 @@ public:
 	int slices, stacks;
 
 	void draw();
+	void draw(Texture * text);
 	Sphere(string type, float radius, int slices, int stacks);
 };
 #endif

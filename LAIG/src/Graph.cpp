@@ -20,32 +20,3 @@ void Graph:: updateDescendantNode(){
 	}
 
 }
-
-void Graph:: giveAppearancesToNodes(){
-
-	map<string, Node>::iterator it;
-	map<string, Appearance>::iterator itA;
-
-	for(it = nodes.begin(); it != nodes.end(); it++){
-		for(itA = appearances.begin(); itA != appearances.end(); itA++){
-			if((*it).second.appRef == (*itA).second.id)
-				(*it).second.app = &(*itA).second;
-			else
-				(*it).second.app=NULL; // assegura que se appearance for 'inherit' app é um apontador nulo
-		}
-	}
-}
-
-void Graph::giveTexturesToAppearances(){
-	vector<Texture>::iterator itT;
-	map<string, Appearance>::iterator itA;
-
-	for(itA = appearances.begin(); itA != appearances.end(); itA++){
-		for(itT = textures.begin(); itT != textures.end(); itT++){
-			if((*itA).second.textureref == (*itT).id)
-				(*itA).second.texture = &(*itT);
-			else
-				(*itA).second.texture=NULL; // assegura que se nao tiver textura 'texture' é um apontador nulo
-		}
-	}
-}

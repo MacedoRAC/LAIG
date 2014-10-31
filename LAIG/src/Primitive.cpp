@@ -53,6 +53,56 @@ void Torus::draw()
 	}
 }
 
+void Torus::draw(Texture* text){
+	double pi = acos(-1.0);
+	float vectorNormal[3];
+	double majorStep = 2.0f*pi / slices;
+	double minorStep = 2.0f*pi / loops;
+	vector<float> x, y, z, r, c;
+
+	for (int i=0; i<slices; i++) //calcula e guarda todas as coordenadas e angulos para depois desenhar
+	{
+		double a0 = i * majorStep;
+		x.push_back(cos(a0));
+		y.push_back(sin(a0));
+		for (int j=0; j<=loops; ++j){
+			double b = j * minorStep;
+			c.push_back(cos(b));
+			r.push_back(inner * c[j] + outer);
+			z.push_back(inner *sin(b));	
+		}
+	} 
+	
+	//desenha o torus
+	for (int i=0; i<slices; ++i){
+		glBegin(GL_TRIANGLE_STRIP);
+		for (int j=0; j<=loops; ++j){
+			glTexCoord2f((float)(i)/(loops), (float)(j)/(slices));
+			vectorNormal[0] = x[i]*c[j];
+			vectorNormal[1] = y[i]*c[j];
+			vectorNormal[2] = z[j]/inner;
+			glNormal3fv(vectorNormal);
+			glVertex3f(x[i]*r[j], y[i]*r[j], z[j]);
+			
+			glTexCoord2f((float)(i+1)/(loops), (float)(j)/(slices));
+			if(i+1 < slices){
+				vectorNormal[0] = x[i+1]*c[j];
+				vectorNormal[1] = y[i+1]*c[j];
+				vectorNormal[2] = z[j]/inner;
+				glNormal3f(vectorNormal[0],vectorNormal[1],vectorNormal[2]);
+				glVertex3f(x[i+1]*r[j], y[i+1]*r[j], z[j]);
+			}else{
+				vectorNormal[0] = x[0]*c[j];
+				vectorNormal[1] = y[0]*c[j];
+				vectorNormal[2] = z[j]/inner;
+				glNormal3f(vectorNormal[0],vectorNormal[1],vectorNormal[2]);
+				glVertex3f(x[0]*r[j], y[0]*r[j], z[j]);
+			}
+		}
+		glEnd();
+	}
+}
+
 void Sphere:: draw(){
 	GLUquadric * quad;
 
@@ -68,7 +118,54 @@ void Sphere:: draw(){
 	gluDeleteQuadric(quad);
 }
 
+void Sphere:: draw(Texture* text){
+	GLUquadric * quad;
+
+	quad = gluNewQuadric();
+	gluQuadricTexture(quad,GL_TRUE);
+	gluQuadricDrawStyle(quad,GLU_FILL);
+	gluQuadricNormals(quad,GLU_SMOOTH);
+	gluQuadricOrientation(quad,GLU_OUTSIDE);
+
+	gluSphere(quad,radius,slices,stacks);
+
+
+	gluDeleteQuadric(quad);
+}
+
 void Cylinder:: draw(){
+
+	GLUquadric * quad, *disk1, *disk2;
+
+	quad = gluNewQuadric();
+	disk1 = gluNewQuadric();
+	disk2 = gluNewQuadric();
+
+	gluQuadricTexture(quad,GL_TRUE);
+	gluQuadricTexture(disk1,GL_TRUE);
+	gluQuadricTexture(disk2,GL_TRUE);
+
+	gluQuadricDrawStyle(quad,GLU_FILL);
+	gluQuadricNormals(quad,GLU_SMOOTH);
+	gluQuadricOrientation(quad,GLU_OUTSIDE);
+
+	gluCylinder(quad,base,top,height,slices,stacks);
+
+	glPushMatrix();
+	glTranslated(0,0,height);
+	gluDisk(disk1,0,top,slices,stacks);
+	glPopMatrix();
+
+	glPushMatrix();
+	glRotated(180,0,1,0);
+	gluDisk(disk2,0,base,slices,stacks);
+	glPopMatrix();
+
+	gluDeleteQuadric(quad);
+	gluDeleteQuadric(disk1);
+}
+
+void Cylinder:: draw(Texture* text){
 
 	GLUquadric * quad, *disk1, *disk2;
 
@@ -135,6 +232,25 @@ void Triangle::draw(Texture * text)
 	glEnd();
 }
 
+void Rectangle::draw(){
+
+	glBegin(GL_QUADS);
+		glNormal3f(0,0,1);
+
+		glTexCoord2f(0,0);
+		glVertex2f(x1,y1);
+
+		glTexCoord2f(1,0);
+		glVertex2f(x2,y1);
+
+		glTexCoord2f(1,1);
+		glVertex2f(x2,y2);
+
+		glTexCoord2f(0,1);
+		glVertex2f(x1,y2);
+	glEnd();
+}
+
 void Rectangle::draw(Texture * text){
 
 	float width = text->texlength_S;
@@ -158,25 +274,6 @@ void Rectangle::draw(Texture * text){
 
 	glTexCoord2f(deltaX,0);
 	glVertex2f(x1,y2);
-	glEnd();
-}
-
-void Rectangle::draw(){
-
-	glBegin(GL_QUADS);
-		glNormal3f(0,0,1);
-
-		glTexCoord2f(0,0);
-		glVertex2f(x1,y1);
-
-		glTexCoord2f(1,0);
-		glVertex2f(x2,y1);
-
-		glTexCoord2f(1,1);
-		glVertex2f(x2,y2);
-
-		glTexCoord2f(0,1);
-		glVertex2f(x1,y2);
 	glEnd();
 }
 

@@ -32,8 +32,6 @@ public:
 
 	void updateRootNode();
 	void updateDescendantNode();
-	void giveAppearancesToNodes();
-	void giveTexturesToAppearances();
 };
 
 #endif

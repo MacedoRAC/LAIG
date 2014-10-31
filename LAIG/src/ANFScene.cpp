@@ -297,21 +297,21 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 				if(sscanf(valString,"%f %f %f %f",&r,&g,&b,&a) == 4)
 				{
-					if(type == "ambient")
+					if(strcmp(type, "ambient") == 0)
 					{
 						newLight.ambient[0]=r;
 						newLight.ambient[1]=g;
 						newLight.ambient[2]=b;
 						newLight.ambient[3]=a;
 					}
-					else if(type == "diffuse")
+					else if(strcmp(type, "diffuse") == 0)
 					{
 						newLight.diffuse[0]=r;
 						newLight.diffuse[1]=g;
 						newLight.diffuse[2]=b;
 						newLight.diffuse[3]=a;
 					}
-					else if(type == "specular")
+					else if(strcmp(type, "specular") == 0)
 					{
 						newLight.specular[0]=r;
 						newLight.specular[1]=g;
@@ -373,10 +373,11 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 	else
 	{
 		TiXmlElement *appearances=appearancesElement->FirstChildElement("appearance");
-
+		Texture * text = NULL; 
+		
 		while(appearances)
 		{
-			Texture * text = NULL; 
+			text = NULL;
 			float shininess = 0;
 			char * id = (char*) appearances->Attribute("id");
 			char * shininessString = (char*) appearances->Attribute("shininess");
@@ -422,13 +423,6 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 				}
 
-				for(unsigned int j= 0 ; j < graph->textures.size();j++){
-				
-					if (textureref.compare(graph->textures[j].id)==0)
-					{
-						text = new Texture(graph->textures[j]);
-					}
-				}
 				appearanceComponent = appearanceComponent->NextSiblingElement();
 				
 			}
@@ -436,6 +430,15 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			CGFappearance* CGFapp= NULL;
 			CGFapp = new CGFappearance(ambient_comp, diffuse_comp, specular_comp, shininess);
 			CGFapp->setShininess(shininess);
+
+			if(textureref != ""){
+				for(unsigned int j= 0 ; j < graph->textures.size();j++){
+					if (textureref.compare(graph->textures[j].id)==0)
+					{
+						text = &graph->textures[j];
+					}
+				}
+			}
 
 			graph->appearances[id]=Appearance(id, textureref, CGFapp, text);
 
@@ -472,7 +475,8 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			{
 				TiXmlElement * tranformation = transforms->FirstChildElement("transform");
 
-				char * valString = NULL, * type = NULL;
+				char * valString = NULL;
+				char * type = NULL;
 				float m[4][4];
 
 				glLoadIdentity();
@@ -480,13 +484,13 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 					type = (char *) tranformation->Attribute("type");
 
-					if(type == "translate"){
+					if(strcmp(type, "translate") == 0){
 						float x,y,z;
 						valString = (char*) tranformation->Attribute("to");
 						if(sscanf(valString,"%f %f %f",&x,&y,&z) == 3){
 							glTranslatef(x,y,z);
 						}
-					}else if(type == "rotate"){
+					}else if(strcmp(type, "rotate") == 0){
 						float angle;
 						char * axis = (char *) tranformation->Attribute("axis");
 						valString = (char*) tranformation->Attribute("angle");
@@ -500,7 +504,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 							else
 								printf("erro na rotação \n");
 						}
-					}else if(type == "scale"){
+					}else if(strcmp(type, "scale") == 0){
 						float x,y,z;
 						valString = (char*) tranformation->Attribute("factor");
 						if(sscanf(valString,"%f %f %f",&x,&y,&z) == 3){
@@ -649,8 +653,6 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 	}
 
 
-	graph->giveTexturesToAppearances();
-	graph->giveAppearancesToNodes();
 	graph->updateDescendantNode();
 	graph->updateRootNode();
 
