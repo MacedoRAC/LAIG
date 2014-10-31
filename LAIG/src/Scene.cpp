@@ -26,7 +26,7 @@ void Scene::init(){
 
 
 	camIt = cameras.begin();
-	for(int i = 0; camIt != cameras.end(); i++,it++) 
+	for(int i = 0; camIt != cameras.end(); i++,camIt++) 
 	{
 		if((*camIt)->id == graph->rootCamera)
 		{

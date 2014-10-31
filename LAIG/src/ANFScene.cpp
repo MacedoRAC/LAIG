@@ -1,6 +1,5 @@
 #include "CGFapplication.h"
 #include "ANFScene.h"
-//#include "GL/glu.h"
 
 
 ANFScene::ANFScene(char *filename, Graph* graph)
@@ -440,7 +439,11 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				}
 			}
 
+
 			graph->appearances[id]=Appearance(id, textureref, CGFapp, text);
+
+			if(graph->appearances[id].textureref != "")
+				graph->appearances[id].app->setTexture(graph->appearances[id].texture->file);
 
 			appearances = appearances->NextSiblingElement();
 		}
@@ -651,7 +654,6 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			graph->nodes[node1.id]=node1;
 		}
 	}
-
 
 	graph->updateDescendantNode();
 	graph->updateRootNode();

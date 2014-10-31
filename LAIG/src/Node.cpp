@@ -16,13 +16,12 @@ void Node::draw(Appearance* appea){
 	
 
 	for(vector<Primitive*>::iterator pIt = p.begin(); pIt < p.end(); pIt++){
-		if(appea){
-			if(appea->textureref != "")
+			if(appea->textureref != ""){
 				(*pIt)->draw(appea->texture);
-			else
+			}
+			else{
 				(*pIt)->draw();
-		}else
-			(*pIt)->draw();
+			}
 	}
 
 	vector<Node*> nV = descendantNode;
