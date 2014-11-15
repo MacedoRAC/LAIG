@@ -5,6 +5,7 @@
 #include<vector>
 #include "Texture.h"
 #include"CGFobject.h"
+#include "CGFShader.h"
 
 
 using namespace std;
@@ -77,7 +78,10 @@ public:
 
 	void draw();
 	void draw(Texture * text);
+	Plane(string type);
 	Plane(string type, int parts);
+
+	~Plane(){};
 };
 
 
@@ -90,26 +94,36 @@ public:
 	void draw(){};
 	void draw(Texture * text);
 	Patch(string type, int order, int partsU, int partsV, string compute, GLfloat * cPoints);
+
+	~Patch(){};
 };
 
 
 class Vehicle : public Primitive{
 public:
-	
+	Plane* plane;
+	Patch* patch;
+	static GLfloat controlPoints[16][3];
+
 	void draw(){};
-	void draw(Texture * text){};
+	void draw(Texture * text);
 	Vehicle(string type);
 
+	~Vehicle(){};
 };
 
 
-class Flag: public Primitive{
+class Flag: public Plane{
 public:
 	string texture;
-
-	void draw(){};
-	void draw(Texture * text){};
+	CGFshader* shader;
+	
 	Flag(string type, string texture);
+	void draw();
+	void draw(Texture * text);
+	void update(unsigned long time);
+
+	~Flag(){};
 };
 
 

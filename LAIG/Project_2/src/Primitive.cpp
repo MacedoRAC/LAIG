@@ -355,6 +355,10 @@ Plane:: Plane(string type, int parts): Primitive(type){
 	this->parts=parts;
 }
 
+Plane:: Plane(string type): Primitive(type){
+	this->parts = 100;
+}
+
 void Plane:: draw(){
 	
 	glMap2f(GL_MAP2_VERTEX_3, 0.0, 1.0, 3, 2, 0.0, 1.0, 3*2, 2,  &controlPoints[0][0]);
@@ -409,7 +413,7 @@ Patch::Patch(string type, int order, int partsU, int partsV, string compute, GLf
 	int numberOfPoints = (order+1)*(order+1); //curvas de bezier
     this->controlPoints = new GLfloat[numberOfPoints*3];
 
-    for(unsigned int i = 0; i < numberOfPoints; i++) {
+    for(int i = 0; i < numberOfPoints; i++) {
         this->controlPoints[i*3+0] = cPoints[i*3+0];
         this->controlPoints[i*3+1] = cPoints[i*3+1];
         this->controlPoints[i*3+2] = cPoints[i*3+2];
@@ -473,12 +477,90 @@ void Patch::draw(Texture * text){
 
 
 //VEHICLE
+//incialização dos pontos de controlo
+GLfloat Vehicle::controlPoints[16][3] = {{ -0.5,  0,  -0.5},
+										 { -0.5,  0,  -0.25},
+										 { -0.5,  0,  0.25},
+										 { -0.5,  0,  0.5},
+										 { -0.25, 0,  -0.5}, 
+										 { -0.25, 1,  -0.25},
+										 { -0.25, 1,  0.25},
+										 { -0.25, 0,  0.5},
+										 { 0.25,  0,  -0.5},
+										 { 0.25,  1,  -0.25},
+										 { 0.25,  1,  0.25},
+										 { 0.25,  0,  0.5},
+										 { 0.5,   0,  -0.5},
+										 { 0.5,   0,  -0.25},
+										 { 0.5,   0,  0.25},
+										 { 0.5,   0,  0.5}};
+
+
 Vehicle::Vehicle(string type):Primitive(type){
+
+	plane = new Plane("plane", 10);
+	patch = new Patch("patch", 3, 10, 10, "fill", controlPoints[0]);
+}
+
+void Vehicle::draw(Texture * text){
+	
+	// Top
+	glPushMatrix();
+		glTranslated(0,0.5,0);
+		patch->draw(text);
+	glPopMatrix();
+
+	// Bottom
+	glPushMatrix();
+		glTranslated(0,-0.5,0);
+		glRotated(180, 1, 0, 0);
+		patch->draw(text);
+	glPopMatrix();
+
+	// Left
+	glPushMatrix();
+		glTranslated(-0.5,0,0);
+		glRotated(90, 0, 0, 1);
+		plane->draw(text);
+	glPopMatrix();
+
+	// Right
+	glPushMatrix();
+		glTranslated(0.5,0,0);
+		glRotated(-90, 0, 0, 1);
+		plane->draw(text);
+	glPopMatrix();
+
+	// Back
+	glPushMatrix();
+		glTranslated(0,0,-0.5);
+		glRotated(-90, 1, 0, 0);
+		plane->draw(text);
+	glPopMatrix();
+
+	// Front
+	glPushMatrix();
+		glTranslated(0,0,0.5);
+		glRotated(90, 1, 0, 0);
+		plane->draw(text);
+	glPopMatrix();
 
 }
 
 
 //FLAG
-Flag::Flag(string type, string texture): Primitive(type){
+Flag::Flag(string type, string texture): Plane(type){
 	this->texture=texture;	
+}
+
+void Flag::draw(){
+
+}
+
+void Flag::draw(Texture * text){
+
+}
+
+void Flag::update(unsigned long time){
+
 }

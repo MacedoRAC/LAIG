@@ -6,6 +6,12 @@ void Node::draw(Appearance* appea){
 	glPushMatrix();
 	glMultMatrixf(matrix);
 
+	if(app)
+		appea = app;
+	
+	if(appea)
+		appea->app->apply();
+
 	vector<Primitive*> p=primitives;
 	
 

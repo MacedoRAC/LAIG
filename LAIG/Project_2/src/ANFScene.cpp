@@ -494,7 +494,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 					cPoints.push_back(point);
 				}
 
-				graph->animations[id] = Animation(id, span, type, cPoints);
+				graph->animations[id] = LinearAnimation(id, span, type, cPoints);
 
 			}else{
 				char* centerString = (char*) animation->Attribute("center");
@@ -518,7 +518,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				float rotAng = 0;
 				sscanf(rotAngString,"%f",rotAng);
 
-				graph->animations[id] = Animation(id, span, type, center, radius, startAng, rotAng);
+				graph->animations[id] = CircularAnimation(id, span, type, center, radius, startAng, rotAng);
 			}
 
 			animation = animation->NextSiblingElement();
@@ -770,11 +770,14 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 					GLfloat* tempPoints = new GLfloat[numbOfPoints * 3];
 
 					TiXmlElement *ctrlPoints = primitivesDef->FirstChildElement("controlpoint");
-					
+
 					for(int i = 0; i < numbOfPoints; i++) { //o ficheiro tem que ter todos os pontos de controlo senao para a aplicaçao
-						sscanf(ctrlPoints->Attribute("x"), "%f", tempPoints[i*3 + 0]);
-						sscanf(ctrlPoints->Attribute("y"), "%f", tempPoints[i*3 + 1]);
-						sscanf(ctrlPoints->Attribute("z"), "%f", tempPoints[i*3 + 2]);
+						char* xString = (char*) ctrlPoints->Attribute("x");
+						sscanf(xString, "%f", &tempPoints[i*3 + 0]);
+						char* yString = (char*) ctrlPoints->Attribute("y");
+						sscanf(yString, "%f", &tempPoints[i*3 + 1]);
+						char* zString = (char*) ctrlPoints->Attribute("z");
+						sscanf(zString, "%f", &tempPoints[i*3 + 2]);
 
 						ctrlPoints = ctrlPoints->NextSiblingElement("controlpoint");
 					}
@@ -808,9 +811,10 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				primitivesDef = primitives->FirstChildElement("vehicle");
 				
 				while(primitivesDef){
-					
-					//FALTA DEFINIR ESTA PRIMITIVA
-					primitivesDef = primitivesDef->NextSiblingElement("plane");
+
+					node1.primitives.push_back(new Vehicle("vehicle"));
+
+					primitivesDef = primitivesDef->NextSiblingElement("vehicle");
 				}
 
 				//Falg

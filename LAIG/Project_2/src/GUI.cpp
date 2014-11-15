@@ -34,7 +34,7 @@ void GUI::initGUI()
 	addColumnToPanel(varPanel);
 	GLUI_Panel *cammodel = addPanelToPanel(varPanel, "Camera", 1);
 	GLUI_RadioGroup* camerasGroup = addRadioGroupToPanel(cammodel,cam);
-	for(int i = 0; i < cameras.size();i++)
+	for(unsigned int i = 0; i < cameras.size();i++)
 	{
 
 		addRadioButtonToGroup(camerasGroup, (char *)cameras[i].c_str());
@@ -44,7 +44,7 @@ void GUI::initGUI()
 
 	addColumnToPanel(varPanel);
 	GLUI_Panel *lightspanel = addPanelToPanel(varPanel, "Lights", 1);
-	for(int i = 0; i < graph->lights.size();i++)
+	for(unsigned int i = 0; i < graph->lights.size();i++)
 	{
 		if (graph->lights[i].enabled)
 			addCheckboxToPanel(lightspanel,
