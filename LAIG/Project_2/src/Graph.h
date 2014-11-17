@@ -34,6 +34,7 @@ public:
 
 	void updateRootNode();
 	void updateDescendantNode();
+	void setWind(int wind);
 };
 
 #endif

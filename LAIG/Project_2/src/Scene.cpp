@@ -134,6 +134,8 @@ void Scene::init(){
 		lights.push_back(newLight);
 	}
 
+	setUpdatePeriod(40);
+
 }
 
 void Scene::display(){

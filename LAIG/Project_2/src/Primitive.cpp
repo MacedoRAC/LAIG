@@ -1,6 +1,8 @@
+#include<GL/glew.h>
 #include"Primitive.h"
 #include"CGFobject.h"
 #include<math.h>
+#include <cstdlib>
 
 Primitive:: Primitive(string type){
 	this->type=type;
@@ -355,10 +357,6 @@ Plane:: Plane(string type, int parts): Primitive(type){
 	this->parts=parts;
 }
 
-Plane:: Plane(string type): Primitive(type){
-	this->parts = 100;
-}
-
 void Plane:: draw(){
 	
 	glMap2f(GL_MAP2_VERTEX_3, 0.0, 1.0, 3, 2, 0.0, 1.0, 3*2, 2,  &controlPoints[0][0]);
@@ -551,7 +549,6 @@ GLfloat Vehicle::controlPoints[16][3] = {{ -0.5,  0,  -0.5},
 
 Vehicle::Vehicle(string type):Primitive(type){
 
-	plane = new Plane("plane", 10);
 	patch = new Patch("patch", 3, 10, 10, "fill", controlPoints[0]);
 }
 
@@ -602,18 +599,61 @@ void Vehicle::draw(Texture * text){
 
 
 //FLAG
-Flag::Flag(string type, string texture): Plane(type){
+Flag::Flag(string type, string texture, Texture* text): Plane(type, 30){
 	this->texture=texture;
+	this->text=text;
+
+	init("data/flag.vert", "data/flag.frag");
+
+	CGFshader::bind();
+
+	texture_Loc = glGetUniformLocation(id(), "text");
+	glUniform1i(texture_Loc, 0);
+
+	this->startTime = 0;
+	this->deltaT = 0;
+	this->wind = 0;
+
+	deltaT_Loc = glGetUniformLocation(id(), "deltaT");
+	glUniform1f(deltaT_Loc, deltaT);
+
+	wind_Loc = glGetUniformLocation(id(), "wind");
+	glUniform1i(wind_Loc, wind);
+
+	CGFshader::unbind();
 }
 
 void Flag::draw(){
-
+	bind();
+	Plane::draw();
+	unbind();
 }
 
 void Flag::draw(Texture * text){
-
+	bind();
+	Plane::draw(text);
+	unbind();
 }
 
 void Flag::update(unsigned long time){
 
+	if(this->startTime == 0)
+		this->startTime = time;
+	else
+		this->deltaT = time - startTime;
+}
+
+void Flag::bind(){
+	CGFshader::bind();
+
+	glUniform1f(wind_Loc, wind);
+	glUniform1f(deltaT_Loc, deltaT);
+
+	glActiveTexture(GL_TEXTURE0);
+
+	text->apply();
+}
+
+void Flag::unbind(){
+	CGFshader::unbind();
 }

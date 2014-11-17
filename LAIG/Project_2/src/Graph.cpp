@@ -20,3 +20,15 @@ void Graph:: updateDescendantNode(){
 	}
 
 }
+
+void Graph::setWind(int wind){
+
+	map<string,Node>::iterator it;
+
+	for(it=nodes.begin(); it!=nodes.end(); it++){
+		for(unsigned int j=0; j<(*it).second.primitives.size(); j++){
+			if((*it).second.primitives[j]->type == "flag")
+				((Flag*)(*it).second.primitives[j])->wind = wind;
+		}
+	}
+}

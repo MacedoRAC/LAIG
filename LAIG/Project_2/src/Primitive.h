@@ -6,6 +6,7 @@
 #include "Texture.h"
 #include"CGFobject.h"
 #include "CGFShader.h"
+#include "CGFapplication.h"
 
 
 using namespace std;
@@ -85,7 +86,6 @@ public:
 	void draw();
 	void draw(Texture * text);
 	void update(unsigned long milis){};
-	Plane(string type);
 	Plane(string type, int parts);
 
 	~Plane(){};
@@ -109,7 +109,6 @@ public:
 
 class Vehicle : public Primitive{
 public:
-	Plane* plane;
 	Patch* patch;
 	static GLfloat controlPoints[16][3];
 
@@ -122,15 +121,20 @@ public:
 };
 
 
-class Flag: public Plane{
+class Flag: public Plane, CGFshader{
 public:
 	string texture;
+	Texture* text;
 	CGFshader* shader;
+	GLint texture_Loc, wind, wind_Loc, deltaT_Loc;
+	float deltaT, startTime;
 	
-	Flag(string type, string texture);
+	Flag(string type, string texture, Texture* text);
 	void draw();
 	void draw(Texture * text);
 	void update(unsigned long time);
+	void bind();
+	void unbind();
 
 	~Flag(){};
 };

@@ -9,6 +9,8 @@ class GUI: public CGFinterface{
 public:
 	Graph* graph;
 	vector<string>cameras;
+	int wind;
+	GLUI_Spinner * windSpinner;
 
 	GUI(Graph* graph);
 	virtual void initGUI();

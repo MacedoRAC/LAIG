@@ -820,14 +820,22 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 					primitivesDef = primitivesDef->NextSiblingElement("vehicle");
 				}
 
-				//Falg
+				//Flag
 				primitivesDef = primitives->FirstChildElement("flag");
 				
 				while(primitivesDef){
 					string texture = "";
 					texture = (string) primitivesDef->Attribute("texture");
+					Texture* text=NULL;
+					
+					for(unsigned int i=0; i<graph->textures.size(); i++){
+						if(graph->textures[i].id == texture){
+							text = &graph->textures[i];
+							break;
+						}
+					}
 
-					node1.primitives.push_back(new Flag("flag", texture));
+					node1.primitives.push_back(new Flag("flag", texture, text));
 
 					primitivesDef = primitivesDef->NextSiblingElement("flag");
 				}

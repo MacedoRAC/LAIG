@@ -3,39 +3,6 @@
 
 void Node::draw(Appearance* appea){
 
-	/*if(hasDisplayList)
-		glCallList(displayList);
-	else{
-		glPushMatrix();
-		glMultMatrixf(matrix);
-
-		if(app)
-			appea = app;
-
-		if(appea)
-			appea->app->apply();
-
-		vector<Primitive*> p=primitives;
-
-
-		for(vector<Primitive*>::iterator pIt = p.begin(); pIt < p.end(); pIt++){
-			if(appea->textureref != ""){
-				(*pIt)->draw(appea->texture);
-			}
-			else{
-				(*pIt)->draw();
-			}
-		}
-
-		vector<Node*> nV = descendantNode;
-		for(vector<Node*>::iterator nIt = nV.begin(); nIt != nV.end();nIt++)
-			(*nIt)->draw(appea);
-
-
-		glPopMatrix();
-	}*/
-
-
 	glPushMatrix();
 
 	if(app)

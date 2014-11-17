@@ -56,12 +56,18 @@ void GUI::initGUI()
 			0);
 	}
 	
+	addColumnToPanel(varPanel);
+	GLUI_Panel *flagPanel = addPanelToPanel(varPanel, "Flag", 1);
+	windSpinner = addSpinnerToPanel(flagPanel, "Wind", GLUI_SPINNER_INT, &wind, -1);
 
+	windSpinner->set_int_limits(0, 10, GLUI_LIMIT_WRAP);
 }
 
 
 void GUI::processGUI(GLUI_Control *ctrl)
-{
+{	
+	if(ctrl->user_id == windSpinner->get_id())
+		graph->setWind(wind);
 
 	if (ctrl->user_id >= 0)
 		if (ctrl->get_int_val() == 1) {
