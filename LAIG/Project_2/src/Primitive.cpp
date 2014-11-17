@@ -422,8 +422,8 @@ Patch::Patch(string type, int order, int partsU, int partsV, string compute, GLf
 
 void Patch::draw(Texture * text){
 	
-	float s = text->texlength_S;
-	float t = text->texlength_T;
+	float s = 1;
+	float t = 1;
 
 	GLint fc[1];
 	glGetIntegerv(GL_FRONT_FACE, fc);
@@ -475,6 +475,59 @@ void Patch::draw(Texture * text){
     glFrontFace(fc[0]);
 }
 
+void Patch::draw(){
+	float s = 1;
+	float t = 1;
+
+	GLint fc[1];
+	glGetIntegerv(GL_FRONT_FACE, fc);
+    glFrontFace(GL_CW);
+    glEnable(GL_AUTO_NORMAL);
+    
+    glMap2f(GL_MAP2_VERTEX_3, 0.0, 1.0, 3, order+1, 0.0, 1.0, 3*(order+1), order+1,  &controlPoints[0]);
+
+	GLfloat* texture;
+
+   if(order==1){
+        GLfloat temp[4][2] = {{0.0, t}, {s,t}, 
+							  {0.0, 0.0}, {s, 0.0}};
+		texture = *temp;
+    }else if(order==2){
+        GLfloat temp[9][2] = {	{0.0,t},	{s/2, t},	{s,t},
+								{0.0,t/2},	{s/2, t/2},	{s, t/2},
+								{0.0,0.0},	{s/2,0.0},	{s,0.0}};
+		texture = *temp;
+    }else if(order==3){
+        GLfloat temp[16][2] = {	{0.0,t},	{s/3, t},	{2*s/3,t},		{s,t},
+								{0.0,2*t/3},{s/3,2*t/3},{2*s/3,2*t/3},	{s,2*t/3},
+								{0.0,t/3},	{s/3,t/3},	{2*s/3,t/3},	{s,t/3},
+								{0.0,0.0},	{s/3,0.0},	{2*s/3,0.0},	{s,0.0}};
+		texture = *temp;
+    }
+
+	glMap2f(GL_MAP2_TEXTURE_COORD_2, 0.0, 1.0, 2, (order+1), 0.0, 1.0, (order+1)*2, (order+1), &texture[0]);
+
+    // activar os interpoladores:
+    glEnable(GL_MAP2_VERTEX_3);
+    glEnable(GL_MAP2_NORMAL);
+    glEnable(GL_MAP2_TEXTURE_COORD_2);
+	
+	//desenha a grelha de acordo com 'partsU' e 'partsV' respectivamente
+    glMapGrid2f(partsU, 0.0, 1.0, partsV, 0.0, 1.0);
+    
+    glShadeModel(GL_SMOOTH); // tipo de shades pode ser: GL_FLAT, GL_SMOOTH
+
+    if(compute == "fill")
+        glEvalMesh2(GL_FILL, 0, partsU, 0, partsV);
+    else if(compute == "point")
+        glEvalMesh2(GL_POINT, 0, partsU, 0, partsV);
+    else if(compute == "line")
+        glEvalMesh2(GL_LINE, 0, partsU, 0, partsV);
+
+
+    glDisable(GL_AUTO_NORMAL);
+    glFrontFace(fc[0]);
+}
 
 //VEHICLE
 //incialização dos pontos de controlo
@@ -521,28 +574,28 @@ void Vehicle::draw(Texture * text){
 	glPushMatrix();
 		glTranslated(-0.5,0,0);
 		glRotated(90, 0, 0, 1);
-		plane->draw(text);
+		patch->draw(text);
 	glPopMatrix();
 
 	// Right
 	glPushMatrix();
 		glTranslated(0.5,0,0);
 		glRotated(-90, 0, 0, 1);
-		plane->draw(text);
+		patch->draw(text);
 	glPopMatrix();
 
 	// Back
 	glPushMatrix();
 		glTranslated(0,0,-0.5);
 		glRotated(-90, 1, 0, 0);
-		plane->draw(text);
+		patch->draw(text);
 	glPopMatrix();
 
 	// Front
 	glPushMatrix();
 		glTranslated(0,0,0.5);
 		glRotated(90, 1, 0, 0);
-		plane->draw(text);
+		patch->draw(text);
 	glPopMatrix();
 
 }
@@ -550,7 +603,7 @@ void Vehicle::draw(Texture * text){
 
 //FLAG
 Flag::Flag(string type, string texture): Plane(type){
-	this->texture=texture;	
+	this->texture=texture;
 }
 
 void Flag::draw(){

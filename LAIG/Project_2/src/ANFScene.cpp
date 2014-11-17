@@ -469,7 +469,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			float span=0;
 			sscanf(spanString,"%f", &span);
 
-			if(type == "linear"){
+			if(strcmp(type, "linear")==0){
 				TiXmlElement *ctrlPoints = animation->FirstChildElement("controlpoint");
 				vector<vector<float>> cPoints;
 
@@ -478,20 +478,22 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 					char* xxString = (char*) ctrlPoints->Attribute("xx");
 					float xx=0;
-					sscanf(xxString,"%f", &xx);
-					point.push_back(xx);
+					if(sscanf(xxString,"%f", &xx))
+						point.push_back(xx);
 
 					char* yyString = (char*) ctrlPoints->Attribute("yy");
 					float yy=0;
-					sscanf(yyString,"%f", &yy);
-					point.push_back(yy);
+					if(sscanf(yyString,"%f", &yy))
+						point.push_back(yy);
 
 					char* zzString = (char*) ctrlPoints->Attribute("zz");
 					float zz=0;
-					sscanf(zzString,"%f", &zz);
-					point.push_back(zz);
+					if(sscanf(zzString,"%f", &zz))
+						point.push_back(zz);
 
 					cPoints.push_back(point);
+
+					ctrlPoints = ctrlPoints->NextSiblingElement();
 				}
 
 				graph->animations[id] = LinearAnimation(id, span, type, cPoints);
@@ -561,9 +563,10 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 			//Animation ref
 			TiXmlElement * animationref = node->FirstChildElement("animationref");
 
-			if (animationref == NULL)
+			if (animationref == NULL){
 				printf("AnimationRef not found!\n");
-			else{
+				node1.animation = NULL;
+			}else{
 				string animId = "";
 				animId = (string) animationref->Attribute("id");
 				

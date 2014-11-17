@@ -23,8 +23,8 @@ public:
 	Animation* animation;
 	
 	void draw(Appearance* appea);
-	Node(){this->app=NULL;};
-	void createDisplayList(Appearance* appea);
+	Node(){this->app=NULL; this->displayList=NULL;};
+	void update(unsigned long milis);
 
 };
 

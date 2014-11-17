@@ -16,8 +16,8 @@ unsigned int lightsArray[8] = {GL_LIGHT0,GL_LIGHT1,GL_LIGHT2,GL_LIGHT3,GL_LIGHT4
 
 void Scene::init(){
 
-	Appearance * appea = NULL;
-	graph->rootNode->createDisplayList(appea);
+	/*Appearance * appea = NULL;
+	graph->rootNode->createDisplayList(appea);*/
 
 	glClearColor(graph->background[0], graph->background[1], graph->background[2], graph->background[3]);
 
@@ -190,9 +190,8 @@ void Scene::display(){
 		
 		lights[i]->update();
 	}
+	
 	// Draw axis
-
-
 	axis.draw();
 
 	Appearance * app = NULL;
@@ -202,5 +201,9 @@ void Scene::display(){
 }
 
 
-void Scene::update(unsigned long millis){
+void Scene::update(unsigned long milis){
+	map<string, Node>::iterator it;
+	
+	for(it = graph->nodes.begin(); it != graph->nodes.end(); it++)
+		it->second.update(milis);
 }

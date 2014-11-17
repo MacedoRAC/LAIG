@@ -17,6 +17,7 @@ public:
 	string type;
 	virtual void draw(){};
 	virtual void draw(Texture* text){}; 
+	virtual void update(unsigned long milis){};
 };
 
 class Rectangle : public Primitive{
@@ -25,6 +26,7 @@ public:
 
 	void draw();
 	void draw(Texture * text);
+	void update(unsigned long milis){};
 	Rectangle(string type, float x1, float x2, float y1, float y2);
 };
 
@@ -34,6 +36,7 @@ public:
 
 	void draw();
 	void draw(Texture * text);
+	void update(unsigned long milis){};
 	Triangle(string type, float x1, float x2, float x3, float y1, float y2, float y3, float z1, float z2, float z3);
 };
 
@@ -44,6 +47,7 @@ public:
 
 	void draw();
 	void draw(Texture * text);
+	void update(unsigned long milis){};
 	Cylinder(string type, float base, float top, float height, int slices, int stacks);
 };
 
@@ -55,6 +59,7 @@ public:
 
 	void draw();
 	void draw(Texture * text);
+	void update(unsigned long milis){};
 	Torus(string type, int slices, int loops, bool smooth, float inner, float outer);
 };
 
@@ -65,6 +70,7 @@ public:
 
 	void draw();
 	void draw(Texture * text);
+	void update(unsigned long milis){};
 	Sphere(string type, float radius, int slices, int stacks);
 };
 
@@ -78,6 +84,7 @@ public:
 
 	void draw();
 	void draw(Texture * text);
+	void update(unsigned long milis){};
 	Plane(string type);
 	Plane(string type, int parts);
 
@@ -91,8 +98,9 @@ public:
 	string compute;
 	GLfloat * controlPoints;
 
-	void draw(){};
+	void draw();
 	void draw(Texture * text);
+	void update(unsigned long milis){};
 	Patch(string type, int order, int partsU, int partsV, string compute, GLfloat * cPoints);
 
 	~Patch(){};
@@ -107,6 +115,7 @@ public:
 
 	void draw(){};
 	void draw(Texture * text);
+	void update(unsigned long milis){};
 	Vehicle(string type);
 
 	~Vehicle(){};

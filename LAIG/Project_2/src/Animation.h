@@ -3,6 +3,7 @@
 
 #include<string>
 #include<vector>
+#include"CGFobject.h"
 
 using namespace std;
 
@@ -12,11 +13,14 @@ public:
 	string id;
 	float span;
 	string type;
+	bool reset;
+	unsigned long startTime;
+	unsigned int previousPoint;
 
 	Animation();
 	Animation(string id, float span, string type);
 	
-	void init(unsigned long time);
+	virtual void init(unsigned long time);
 	virtual void update(unsigned long time);
 	virtual void apply();
 
@@ -26,10 +30,12 @@ public:
 class LinearAnimation: public Animation{
 public:
 	vector<vector<float>> controlPoints;
+	float distance, xTranslation, yTranslation, zTranslation, rotation;
 
 	LinearAnimation(string id, float span, string type, vector<vector<float>> ctrlPoints);
-	void update(unsigned long time) {};
-	void apply(){};
+	void update(unsigned long time);
+	void apply();
+	void init(unsigned long time);
 
 	~LinearAnimation(){};
 };
@@ -38,13 +44,12 @@ public:
 class CircularAnimation: public Animation{
 public:
 	vector<float> center;
-	float radius;
-	float startAngle;
-	float rotAngle;
+	float radius, startAngle, rotAngle, currentAngle, angularSpeed;
 
 	CircularAnimation(string id, float span, string type, vector<float> center, float radius, float startAngle, float rotAngle);
-	void update(unsigned long time){};
-	void apply(){};
+	void update(unsigned long time);
+	void apply();
+	void init(unsigned long time);
 
 	~CircularAnimation(){};
 };

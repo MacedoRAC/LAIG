@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 
 	Graph * pgraph = new Graph();
 
-	char* filename = "displayListTest.xml";
+	char* filename = "linearAnimTest.xml";
 	if (argc >1)
 		filename = argv[1];
 	CGFapplication app = CGFapplication();

@@ -3,56 +3,107 @@
 
 void Node::draw(Appearance* appea){
 
-	glPushMatrix();
-	glMultMatrixf(matrix);
+	/*if(hasDisplayList)
+		glCallList(displayList);
+	else{
+		glPushMatrix();
+		glMultMatrixf(matrix);
 
-	if(app)
-		appea = app;
-	
-	if(appea)
-		appea->app->apply();
+		if(app)
+			appea = app;
 
-	vector<Primitive*> p=primitives;
-	
+		if(appea)
+			appea->app->apply();
 
-	for(vector<Primitive*>::iterator pIt = p.begin(); pIt < p.end(); pIt++){
+		vector<Primitive*> p=primitives;
+
+
+		for(vector<Primitive*>::iterator pIt = p.begin(); pIt < p.end(); pIt++){
 			if(appea->textureref != ""){
 				(*pIt)->draw(appea->texture);
 			}
 			else{
 				(*pIt)->draw();
 			}
-	}
+		}
 
-	vector<Node*> nV = descendantNode;
-	for(vector<Node*>::iterator nIt = nV.begin(); nIt != nV.end();nIt++)
-		(*nIt)->draw(appea);
-	
-	
-	glPopMatrix();
-}
+		vector<Node*> nV = descendantNode;
+		for(vector<Node*>::iterator nIt = nV.begin(); nIt != nV.end();nIt++)
+			(*nIt)->draw(appea);
 
-void Node::createDisplayList(Appearance* appea){
+
+		glPopMatrix();
+	}*/
+
+
+	glPushMatrix();
 
 	if(app)
 		appea = app;
-	
+
 	if(appea)
 		appea->app->apply();
 
-	vector<Node*> descNodes = descendantNode;
+	
+	// Display List
 
-	for(vector<Node*>::iterator nIt = descNodes.begin(); nIt != descNodes.end();nIt++)
-			(*nIt)->createDisplayList(appea);
+	if(displayList==NULL && hasDisplayList) {
 
-
-	if(hasDisplayList)
-	{
 		displayList = glGenLists(1);
-		hasDisplayList = false;
-		glNewList(displayList,GL_COMPILE);
-		draw(appea);
+		glNewList(displayList, GL_COMPILE);
+
+		// Transformações
+		glMultMatrixf(matrix);
+
+		// Primitivas
+		for (unsigned int i = 0; i < primitives.size(); i++){
+			if(appea->textureref != ""){
+				primitives[i]->draw(appea->texture);
+			}else{
+				primitives[i]->draw();
+			}
+		}
+
+		// Nós filhos
+		for (unsigned int i = 0; i < descendantNode.size(); i++)
+			descendantNode[i]->draw(appea);
+
 		glEndList();
-		hasDisplayList = true;
+		
+	}else if(displayList!=NULL && hasDisplayList) {
+			glCallList(displayList);
+	
+	}else{ //não tem displaylists
+
+		// Transformações
+		glMultMatrixf(matrix);
+
+		if(animation)
+			animation->apply();
+
+		// Primitivas
+		for (unsigned int i = 0; i < primitives.size(); i++){
+				if(appea->textureref != ""){
+					primitives[i]->draw(appea->texture);
+				}else{
+					primitives[i]->draw();
+				}
+			}
+
+		// Nós filhos 
+		for (unsigned int i = 0; i < descendantNode.size(); i++)
+			descendantNode[i]->draw(appea);
+	}
+
+	glPopMatrix();
+
+}
+
+void Node::update(unsigned long milis) {
+	if(animation)
+		animation->update(milis);
+
+	for (int i = 0; i < primitives.size(); i++){
+			primitives[i]->update(milis);
 	}
 }

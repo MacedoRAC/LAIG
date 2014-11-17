@@ -19,7 +19,7 @@ public:
 	
 	void init();
 	void display();
-	void update(unsigned long millis);
+	void update(unsigned long milis);
 
 };
 
