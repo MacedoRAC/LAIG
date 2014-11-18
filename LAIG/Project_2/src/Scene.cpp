@@ -134,7 +134,7 @@ void Scene::init(){
 		lights.push_back(newLight);
 	}
 
-	setUpdatePeriod(40);
+	setUpdatePeriod(100);
 
 }
 
@@ -195,7 +195,7 @@ void Scene::display(){
 	
 	// Draw axis
 	axis.draw();
-
+	
 	Appearance * app = NULL;
 	graph->rootNode->draw(app);
 	

@@ -50,7 +50,7 @@ void LinearAnimation::init(unsigned long time){
 		yTranslation = controlPoints[0][1];
 		zTranslation = controlPoints[0][2];
 	} else {
-		xTranslation = yTranslation = zTranslation = 0;
+		xTranslation = yTranslation = zTranslation = 1;
 	}
 
 	startTime = time;
@@ -60,7 +60,7 @@ void LinearAnimation::init(unsigned long time){
 
 void LinearAnimation::apply(){
 	glTranslatef(this->xTranslation, this->yTranslation, this->zTranslation);
-	glRotatef(rotation, 0, 1, 0);
+	glRotated(rotationAngle, 0, 1, 0);
 }
 
 void LinearAnimation::update(unsigned long time){
@@ -70,7 +70,7 @@ void LinearAnimation::update(unsigned long time){
 		return;
 	}
 
-	unsigned long deltaT = time-startTime;
+	unsigned long deltaT = (time-startTime)*0.001;
 	startTime = time;
 
 	if(previousPoint < controlPoints.size()-1 && xTranslation == controlPoints[previousPoint+1][0]
@@ -122,22 +122,29 @@ void LinearAnimation::update(unsigned long time){
 	if( (v[2] > 0 && zTranslation > controlPoints[previousPoint+1][2]) || (v[2] < 0 && zTranslation < controlPoints[previousPoint+1][2]))
 		zTranslation = controlPoints[previousPoint+1][2];
 
+	
+	if(previousPoint + 1 < controlPoints[0].size())
+		updateRotationAngle();
 
-	// Declarando vetores para calcular o ângulo
-	float v1[2]; // vetor do segmento de recta a ser actualmente percorrido
-	float v2[2]; // vector do segmento de recta unitário no eixo dos zz
+}
 
-	if(previousPoint + 1 < controlPoints[0].size()){
-		v1[0] = controlPoints[previousPoint + 1][0] - controlPoints[previousPoint][0];
-		v1[1] =	controlPoints[previousPoint + 1][2] - controlPoints[previousPoint][2];
-		v2[0] = 0;
-		v2[1] = 1;
+void LinearAnimation::updateRotationAngle(){
 
-		float scalar = v1[0] * v2[0] + v1[1] * v2[1];
-		float norm1 = sqrt(pow((float)v1[0],(float)2.0)+pow((float)v1[1],(float)2.0));
-		float norm2 = sqrt(pow((float)v2[0],(float)2.0)+pow((float)v2[1],(float)2.0));
-		rotation = acos(scalar/(norm1*norm2)) * (180/PI);
-	}
+	float vec1[2]; 
+	float vec2[2]; 
+
+	vec1[0] = controlPoints[previousPoint + 1][0] - controlPoints[previousPoint][0];
+	vec1[1] =	controlPoints[previousPoint + 1][2] - controlPoints[previousPoint][2];
+	vec2[0] = 0;
+	vec2[1] = 1;
+
+	float scalProduct = vec1[0] * vec2[0] + vec1[1] * vec2[1];
+	float normVec1 = sqrt(pow((float)vec1[0],(float)2.0) + pow((float)vec1[1],(float)2.0));
+	float normVec2 = sqrt(pow((float)vec2[0],(float)2.0) + pow((float)vec2[1],(float)2.0));
+
+
+	rotationAngle = acos(scalProduct / (normVec1 * normVec2)) * (180/PI);
+
 }
 
 //CIRCULAR ANIMATION

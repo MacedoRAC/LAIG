@@ -510,15 +510,15 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 				char* radiusString = (char*) animation->Attribute("radius");
 				float radius = 0;
-				sscanf(radiusString,"%f",radius);
+				sscanf(radiusString,"%f",&radius);
 
 				char* starAngString = (char*) animation->Attribute("startang");
 				float startAng = 0;
-				sscanf(starAngString,"%f",startAng);
+				sscanf(starAngString,"%f",&startAng);
 
 				char* rotAngString = (char*) animation->Attribute("rotang");
 				float rotAng = 0;
-				sscanf(rotAngString,"%f",rotAng);
+				sscanf(rotAngString,"%f",&rotAng);
 
 				graph->animations[id] = CircularAnimation(id, span, type, center, radius, startAng, rotAng);
 			}

@@ -5,6 +5,7 @@
 #include"Graph.h"
 #include"Primitive.h"
 #include<vector>
+#include"CGFapplication.h"
 
 class Scene: public CGFscene{
 	

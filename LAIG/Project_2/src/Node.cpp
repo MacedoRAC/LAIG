@@ -11,6 +11,9 @@ void Node::draw(Appearance* appea){
 	if(appea)
 		appea->app->apply();
 
+	if(animation)
+			animation->apply();
+
 	
 	// Display List
 
@@ -44,9 +47,6 @@ void Node::draw(Appearance* appea){
 
 		// Transformações
 		glMultMatrixf(matrix);
-
-		if(animation)
-			animation->apply();
 
 		// Primitivas
 		for (unsigned int i = 0; i < primitives.size(); i++){

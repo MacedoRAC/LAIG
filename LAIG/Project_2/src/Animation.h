@@ -4,6 +4,7 @@
 #include<string>
 #include<vector>
 #include"CGFobject.h"
+#include "CGFapplication.h"
 
 using namespace std;
 
@@ -30,12 +31,13 @@ public:
 class LinearAnimation: public Animation{
 public:
 	vector<vector<float>> controlPoints;
-	float distance, xTranslation, yTranslation, zTranslation, rotation;
+	float distance, xTranslation, yTranslation, zTranslation, rotationAngle;
 
 	LinearAnimation(string id, float span, string type, vector<vector<float>> ctrlPoints);
 	void update(unsigned long time);
 	void apply();
 	void init(unsigned long time);
+	void updateRotationAngle();
 
 	~LinearAnimation(){};
 };
