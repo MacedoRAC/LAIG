@@ -20,11 +20,12 @@ public:
 	bool hasDisplayList;
 	GLuint displayList;
 	string animationRef;
-	vector<Animation*> animation;
 	Flag * flag;
+	ComposedAnimation* animations;
+	//vector<Animation*> animation;
 	
 	void draw(Appearance* appea);
-	Node(){this->app=NULL; this->displayList=NULL; this->flag=NULL;};
+	Node(){this->app=NULL; this->displayList=NULL; this->flag=NULL; this->animations=NULL;};
 	void update(unsigned long milis);
 
 };

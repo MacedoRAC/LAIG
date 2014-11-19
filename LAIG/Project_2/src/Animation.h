@@ -25,7 +25,7 @@ public:
 	virtual void update(unsigned long time) = 0;
 	virtual void apply() = 0;
 
-	//~Animation(){};
+	~Animation(){};
 };
 
 class LinearAnimation: public Animation{
@@ -55,6 +55,21 @@ public:
 	void init(unsigned long time);
 
 	~CircularAnimation(){};
+};
+
+
+class ComposedAnimation: public Animation{
+
+public:
+	vector<Animation*> animations;
+	unsigned int actualAnim;
+
+	ComposedAnimation(vector<Animation*> animations){this->animations=animations; this->actualAnim = 0; this->repeat=true;};
+	void update(unsigned long time);
+	void apply();
+	void init(unsigned long time);
+
+	~ComposedAnimation(){};
 };
 
 #endif

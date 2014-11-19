@@ -50,7 +50,7 @@ void LinearAnimation::init(unsigned long time){
 	previousPoint = 0;
 	reset = false;
 	finished = false;
-	this->repeat=true;
+	this->repeat=false;
 }
 
 void LinearAnimation::apply(){
@@ -159,7 +159,7 @@ CircularAnimation::CircularAnimation(string id, float span, string type, vector<
 
 	this->angularSpeed = rotAngle/span;
 	this->reset = true;
-	this->repeat = true;
+	this->repeat = false;
 }
 
 void CircularAnimation::update(unsigned long time){
@@ -197,4 +197,39 @@ void CircularAnimation::init(unsigned long time){
 	this->reset = false;
 	this->startTime = time;
 	this->finished = false;
+}
+
+
+//COMPOSED ANIMATION
+void ComposedAnimation::init(unsigned long time){
+	this->actualAnim = 0;
+
+	this->animations[actualAnim]->init(time);
+	this->finished = false;
+
+	this->reset = false;
+}
+
+void ComposedAnimation::update(unsigned long time){
+	if(reset)
+		init(time);
+	else{
+		animations[actualAnim]->update(time);
+
+		if(animations[actualAnim]->finished){
+			actualAnim = (actualAnim + 1) % animations.size();
+
+			if(actualAnim == 0){
+				if(repeat)
+					init(time);
+				else
+					this->finished = true;
+			}else
+				this->animations[actualAnim]->init(time);
+		}
+	}
+}
+
+void ComposedAnimation::apply(){
+	animations[actualAnim]->apply();
 }

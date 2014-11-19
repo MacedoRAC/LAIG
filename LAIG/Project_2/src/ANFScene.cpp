@@ -567,13 +567,22 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				printf("AnimationRef not found!\n");
 			}else{
 				string animId = "";
-				animId = (string) animationref->Attribute("id");
-				
-				node1.animationRef=animId;
+				vector<Animation*> animations;
 
-				if(animId != ""){
-					node1.animation.push_back(graph->animations.find(animId)->second);
+				while(animationref){
+					animId = "";
+					animId = (string) animationref->Attribute("id");
+
+					node1.animationRef=animId;
+
+					if(animId != ""){
+						animations.push_back(graph->animations.find(animId)->second);
+					}
+					
+					animationref = animationref->NextSiblingElement("animationref");
 				}
+
+				node1.animations = new ComposedAnimation(animations); 
 			}
 
 			TiXmlElement * transforms = node->FirstChildElement("transforms");
