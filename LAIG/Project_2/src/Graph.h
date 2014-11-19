@@ -29,7 +29,7 @@ public:
 	map<string,Camera *> cameras;
 	vector<Light> lights;
 	vector<Texture> textures;
-	map<string ,Animation> animations;
+	map<string ,Animation*> animations;
 	map<string ,Appearance> appearances;
 
 	void updateRootNode();

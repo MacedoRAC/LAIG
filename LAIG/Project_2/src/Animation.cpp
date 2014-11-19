@@ -42,82 +42,93 @@ void LinearAnimation::init(unsigned long time){
 		yTranslation = controlPoints[0][1];
 		zTranslation = controlPoints[0][2];
 	} else {
-		xTranslation = yTranslation = zTranslation = 1;
+		xTranslation = yTranslation = zTranslation = 0;
 	}
 
 	startTime = time;
+	controlTime = time;
 	previousPoint = 0;
 	reset = false;
+	finished = false;
+	this->repeat=true;
 }
 
 void LinearAnimation::apply(){
-	glTranslatef(this->xTranslation, this->yTranslation, this->zTranslation);
-	glRotated(rotationAngle, 0, 1, 0);
+	
+	if(!finished){
+		glTranslatef(this->xTranslation, this->yTranslation, this->zTranslation);
+		glRotated(rotationAngle, 0, 1, 0);
+	}
 }
 
 void LinearAnimation::update(unsigned long time){
 
-	if(this->reset) {
+	if(reset) {
 		init(time);
 		return;
 	}
-
-	unsigned long deltaT = (time-startTime)*0.001;
-	startTime = time;
-
+	
 	if(previousPoint < controlPoints.size()-1 && xTranslation == controlPoints[previousPoint+1][0]
-											  && yTranslation == controlPoints[previousPoint+1][1]
-											  && zTranslation == controlPoints[previousPoint+1][2]) {
+												&& yTranslation == controlPoints[previousPoint+1][1]
+												&& zTranslation == controlPoints[previousPoint+1][2]) {
 		previousPoint++;
 	}
-
+		
 	if(previousPoint == controlPoints.size()-1) {
-		this->reset = true;
+		this->finished = true;
+		printf("\n\n\n FINISHED \n");
+		if(repeat)
+			init(time);
 		return;
 	}
 
-	// Calcular vector do movimento
-	float v[3];
-	v[0] = controlPoints[previousPoint+1][0] - controlPoints[previousPoint][0]; //xx
-	v[1] = controlPoints[previousPoint+1][1] - controlPoints[previousPoint][1]; //yy
-	v[2] = controlPoints[previousPoint+1][2] - controlPoints[previousPoint][2]; //zz
+printf("\nPreviousPoint: %d\n TamanhoControlPoints: %d\n\n", previousPoint, controlPoints.size());
+	
+if(!finished){
+		float deltaTime = (time - startTime) * 0.001;
+		startTime = time;
+		
 
-	// Normalizar o vetor v
-	float vnorm = sqrtf( pow(v[0], 2) + pow(v[1], 2) + pow(v[2], 2));
+		// Calcular vector do movimento
+		float v[3];
+		v[0] = controlPoints[previousPoint+1][0] - controlPoints[previousPoint][0]; //xx
+		v[1] = controlPoints[previousPoint+1][1] - controlPoints[previousPoint][1]; //yy
+		v[2] = controlPoints[previousPoint+1][2] - controlPoints[previousPoint][2]; //zz
 
-	if(vnorm != 0) {
-		v[0] /= vnorm;
-		v[1] /= vnorm;
-		v[2] /= vnorm;
+		// Normalizar o vetor v
+		float v_norm = sqrtf( pow(v[0], 2) + pow(v[1], 2) + pow(v[2], 2));
+
+		if(v_norm != 0) {
+			v[0] /= v_norm;
+			v[1] /= v_norm;
+			v[2] /= v_norm;
+		}
+
+		// Calcular velocidade 
+		float velocity = (distance/span)*(deltaTime);
+
+		// Calcular movimento
+		v[0] *= velocity;
+		v[1] *= velocity;
+		v[2] *= velocity;
+
+		// Atualizar os valores de xTranslation, yTranslation, zTranslation
+		xTranslation += v[0];
+		yTranslation += v[1];
+		zTranslation += v[2];
+
+		// Verificar se não passou o ponto de controlo seguinte
+		if((v[0] > 0 && xTranslation > controlPoints[previousPoint+1][0]) || (v[0] < 0 && xTranslation < controlPoints[previousPoint+1][0]))
+			xTranslation = controlPoints[previousPoint+1][0];
+		if((v[1] > 0 && yTranslation > controlPoints[previousPoint+1][1]) || (v[1] < 0 && yTranslation < controlPoints[previousPoint+1][1]) )
+			yTranslation = controlPoints[previousPoint+1][1];
+		if((v[2] > 0 && zTranslation > controlPoints[previousPoint+1][2]) || (v[2] < 0 && zTranslation < controlPoints[previousPoint+1][2]))
+			zTranslation = controlPoints[previousPoint+1][2];
+
+		updateRotationAngle();
 	}
 
-	// Calcular velocidade 
-	float velocity = (distance/(span*1000))*(deltaT);
-
-	// Calcular movimento
-	v[0] *= velocity;
-	v[1] *= velocity;
-	v[2] *= velocity;
-
-	// Atualizar os valores de xTranslation, yTranslation, zTranslation
-	xTranslation += v[0];
-	yTranslation += v[1];
-	zTranslation += v[2];
-
-	// Verificar se não passou o ponto de controlo seguinte
-	if( (v[0] > 0 && xTranslation > controlPoints[previousPoint+1][0]) || (v[0] < 0 && xTranslation < controlPoints[previousPoint+1][0]))
-		xTranslation = controlPoints[previousPoint+1][0];
-
-	if( (v[1] > 0 && yTranslation > controlPoints[previousPoint+1][1]) || (v[1] < 0 && yTranslation < controlPoints[previousPoint+1][1]))
-		yTranslation = controlPoints[previousPoint+1][1];
-
-	if( (v[2] > 0 && zTranslation > controlPoints[previousPoint+1][2]) || (v[2] < 0 && zTranslation < controlPoints[previousPoint+1][2]))
-		zTranslation = controlPoints[previousPoint+1][2];
-
-	
-	if(previousPoint + 1 < controlPoints[0].size())
-		updateRotationAngle();
-
+		
 }
 
 void LinearAnimation::updateRotationAngle(){
@@ -126,7 +137,7 @@ void LinearAnimation::updateRotationAngle(){
 	float vec2[2]; 
 
 	vec1[0] = controlPoints[previousPoint + 1][0] - controlPoints[previousPoint][0];
-	vec1[1] =	controlPoints[previousPoint + 1][2] - controlPoints[previousPoint][2];
+	vec1[1] = controlPoints[previousPoint + 1][2] - controlPoints[previousPoint][2];
 	vec2[0] = 0;
 	vec2[1] = 1;
 
@@ -148,34 +159,42 @@ CircularAnimation::CircularAnimation(string id, float span, string type, vector<
 
 	this->angularSpeed = rotAngle/span;
 	this->reset = true;
+	this->repeat = true;
 }
 
 void CircularAnimation::update(unsigned long time){
-	if(this->reset) {
+	if(reset)
 		init(time);
-		return;
+	else{
+		if(!finished){
+			float deltaTime = (time - startTime) * 0.001;
+			this->startTime = time;
+
+			currentAngle += angularSpeed * deltaTime;
+
+			if(abs(currentAngle) >= abs(startAngle + rotAngle)){
+				if(repeat)
+					init(time);
+				else
+					finished = true;
+			}
+		}
 	}
-		
-	unsigned long deltaT = time-startTime;
-	startTime = time;
-
-	currentAngle += angularSpeed * deltaT;
-
-	if(abs(currentAngle) >= abs(startAngle + rotAngle))
-			init(time);
 		
 }
 
 void CircularAnimation::apply(){
-	glTranslatef(center[0], center[1], center[2]);
-	glRotatef(currentAngle, 0, 1, 0);
-	glTranslatef(radius, 0, 0);
+	if(!finished){
+		glTranslatef(center[0], center[1], center[2]);
+		glRotatef(currentAngle, 0, 1, 0);
+		glTranslatef(radius, 0, 0);
+	}
 }
 
 void CircularAnimation::init(unsigned long time){
 	this->currentAngle = startAngle;
 
 	this->reset = false;
-
 	this->startTime = time;
+	this->finished = false;
 }

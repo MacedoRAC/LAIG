@@ -21,9 +21,10 @@ public:
 	GLuint displayList;
 	string animationRef;
 	vector<Animation*> animation;
+	Flag * flag;
 	
 	void draw(Appearance* appea);
-	Node(){this->app=NULL; this->displayList=NULL;};
+	Node(){this->app=NULL; this->displayList=NULL; this->flag=NULL;};
 	void update(unsigned long milis);
 
 };

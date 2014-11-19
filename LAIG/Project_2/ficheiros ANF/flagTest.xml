@@ -18,80 +18,21 @@
   
 
     <lights>
-        <light id="Sun" type="omni" enabled="true" marker="true" pos="0 800 -400" >
+        <light id="Sun" type="omni" enabled="true" marker="true" pos="0 800 0" >
             <component type="ambient" value="1 1 1 1" />
             <component type="diffuse" value="1 1 1 1" />
             <component type="specular" value="1 1 1 1" />
         </light>
-
-        <light id="Forest Spot Light" type="spot" enabled="true" marker="true" pos="25 10 15" target="50 0 15"  
-            angle="20" exponent="25" >
-            <component type="ambient" value="1 1 0 1" />
-            <component type="diffuse" value="1 1 0 1" />
-            <component type="specular" value="1 1 0 1" />
-        </light>
     </lights>
 
     <textures>
-        <texture id="ground" file="res/ground.jpg" texlength_s="800" texlength_t="800" />
-        <texture id="pine-tree-needle" file="res/pine-tree-needle.jpg" texlength_s="1" texlength_t="1" />
-        <texture id="pine-tree-bark" file="res/pine-tree-bark.png" texlength_s="1" texlength_t="1" />
-        <texture id="airplane-propeller" file="res/propeller.png" texlength_s="1" texlength_t="1" />
-        <texture id="aluminum" file="res/aluminum.jpg" texlength_s="1" texlength_t="1" />
+        <texture id="bandeira" file="bandeira.jpg" texlength_s="1" texlength_t="1" />
     </textures>
 
     <appearances>
-        <appearance id="defaultAppearance" shininess="20" >
-            <component type="ambient" value="0 0 0 1" />
+        <appearance id="bandeira" shininess="20" >
+            <component type="ambient" value="1 1 1 1" />
             <component type="diffuse" value="1 1 1 1" />
-            <component type="specular" value="1 1 1 1" />
-        </appearance>
-
-        <appearance id="ground" shininess="20" textureref="ground" >
-            <component type="ambient" value="0 0 0 1" />
-            <component type="diffuse" value="0.5 0.5 0.5 1" />
-            <component type="specular" value="0 0 0 1" />
-        </appearance>
-
-        <appearance id="wood" shininess="10" textureref="pine-tree-bark" >
-               <component type="ambient" value="0 0 0 1" />
-               <component type="diffuse" value="0.55 0.3 0.14 1" />
-               <component type="specular" value="0.55 0.3 0.14 1" />
-        </appearance>
-
-        <appearance id="leaves" shininess="10" textureref="pine-tree-needle" >
-               <component type="ambient" value="0 0 0 1" />
-               <component type="diffuse" value="0.36 0.58 0.06 1" />
-               <component type="specular" value="0.18 0.29 0.03 1" />
-        </appearance>
-
-        <appearance id="red-aluminum" shininess="120" textureref="aluminum" >
-            <component type="ambient" value="0 0 0 1" />
-            <component type="diffuse" value="0.8 0.1 0.1 1" />
-            <component type="specular" value="0.7 0.7 0.7 1" />
-        </appearance>
-
-        <appearance id="aluminum" shininess="120" textureref="aluminum" >
-            <component type="ambient" value="0 0 0 1" />
-            <component type="diffuse" value="0.8 0.8 0.8 1" />
-            <component type="specular" value="1 1 1 1" />
-        </appearance>
-
-        <appearance id="black-rubber" shininess="20" >
-            <component type="ambient" value="0 0 0 1" />
-            <component type="diffuse" value="0 0 0 1" />
-            <component type="specular" value="0.1 0.1 0.1 1" />
-        </appearance>
-
-        <appearance id="metal" shininess="120" >
-            <component type="ambient" value="0 0 0 1" />
-            <component type="diffuse" value="0.7 0.7 0.7 1" />
-            <component type="specular" value="1 1 1 1" />
-        </appearance>
-
-        <appearance id="airplane-propeller" shininess="120" textureref="airplane-propeller" >
-            <component type="ambient" value="0 0 0 1" />
-            <component type="diffuse" value="0.5 0.5 0.5 1" />
             <component type="specular" value="1 1 1 1" />
         </appearance>
     </appearances>
@@ -105,11 +46,10 @@
               <transform type="scale" factor="10 10 10" /> 
             </transforms>
 
-            <appearanceref id="ground" />
+            <appearanceref id="bandeira" />
 
             <primitives>
-              <flag texture="ground"></flag>
-              
+              <flag texture="bandeira.jpg"></flag>
             </primitives>
 
             <descendants>

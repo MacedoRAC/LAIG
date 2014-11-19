@@ -496,7 +496,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 					ctrlPoints = ctrlPoints->NextSiblingElement();
 				}
 
-				graph->animations[id] = LinearAnimation(id, span, type, cPoints);
+				graph->animations[id] = new LinearAnimation(id, span, type, cPoints);
 
 			}else{
 				char* centerString = (char*) animation->Attribute("center");
@@ -520,7 +520,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				float rotAng = 0;
 				sscanf(rotAngString,"%f",&rotAng);
 
-				graph->animations[id] = CircularAnimation(id, span, type, center, radius, startAng, rotAng);
+				graph->animations[id] = new CircularAnimation(id, span, type, center, radius, startAng, rotAng);
 			}
 
 			animation = animation->NextSiblingElement();
@@ -572,7 +572,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				node1.animationRef=animId;
 
 				if(animId != ""){
-					node1.animation.push_back(&graph->animations.find(animId)->second);
+					node1.animation.push_back(graph->animations.find(animId)->second);
 				}
 			}
 
@@ -823,16 +823,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				while(primitivesDef){
 					string texture = "";
 					texture = (string) primitivesDef->Attribute("texture");
-					Texture* text=NULL;
-					
-					for(unsigned int i=0; i<graph->textures.size(); i++){
-						if(graph->textures[i].id == texture){
-							text = &graph->textures[i];
-							break;
-						}
-					}
-
-					node1.primitives.push_back(new Flag("flag", texture, text));
+					node1.flag = new Flag("flag", texture);
 
 					primitivesDef = primitivesDef->NextSiblingElement("flag");
 				}

@@ -14,8 +14,8 @@ public:
 	string id;
 	float span;
 	string type;
-	bool reset;
-	unsigned long startTime;
+	bool reset, repeat, finished;
+	unsigned long startTime, controlTime;
 	unsigned int previousPoint;
 
 	Animation();
@@ -32,6 +32,7 @@ class LinearAnimation: public Animation{
 public:
 	vector<vector<float>> controlPoints;
 	float distance, xTranslation, yTranslation, zTranslation, rotationAngle;
+	unsigned long deltaT;
 
 	LinearAnimation(string id, float span, string type, vector<vector<float>> ctrlPoints);
 	void update(unsigned long time);

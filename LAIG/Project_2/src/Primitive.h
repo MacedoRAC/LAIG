@@ -115,16 +115,16 @@ public:
 class Flag: public Plane, CGFshader{
 public:
 	string texture;
-	Texture* text;
+	CGFtexture* text;
 	CGFshader* shader;
 	GLint texture_Loc, wind, wind_Loc, deltaT_Loc;
-	float deltaT, startTime;
+	float startTime, elapsed, timer;
 	
-	Flag(string type, string texture, Texture* text);
+	Flag(string type, string texture);
 	void draw();
 	void draw(Texture * text);
 	void bind();
-	void unbind();
+	void update(unsigned long time);
 
 	~Flag(){};
 };

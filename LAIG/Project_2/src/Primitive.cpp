@@ -599,53 +599,48 @@ void Vehicle::draw(Texture * text){
 
 
 //FLAG
-Flag::Flag(string type, string texture, Texture* text): Plane(type, 30){
+Flag::Flag(string type, string texture): Plane(type, 30){
+	this->elapsed=0;
+	
 	this->texture=texture;
-	this->text=text;
 
-	init("data/flag.vert", "data/flag.frag");
+	init("flag.vert", "flag.frag");
 
 	CGFshader::bind();
 
-	texture_Loc = glGetUniformLocation(id(), "text");
+	text = new CGFtexture(texture);
+	timer = glGetUniformLocation(id(), "timer");
+	
+	texture_Loc = glGetUniformLocation(id(), "baseImage");
 	glUniform1i(texture_Loc, 0);
-
-	this->startTime = 0;
-	this->deltaT = 0;
-	this->wind = 0;
-
-	deltaT_Loc = glGetUniformLocation(id(), "deltaT");
-	glUniform1f(deltaT_Loc, deltaT);
-
-	wind_Loc = glGetUniformLocation(id(), "wind");
-	glUniform1i(wind_Loc, wind);
-
-	CGFshader::unbind();
 }
 
 void Flag::draw(){
 	bind();
 	Plane::draw();
-	unbind();
+	CGFshader::unbind();
 }
 
 void Flag::draw(Texture * text){
 	bind();
 	Plane::draw(text);
-	unbind();
+	CGFshader::unbind();
 }
 
 void Flag::bind(){
 	CGFshader::bind();
 
-	glUniform1f(wind_Loc, wind);
-	glUniform1f(deltaT_Loc, deltaT);
+	glUniform1f(timer, elapsed);
 
 	glActiveTexture(GL_TEXTURE0);
 
 	text->apply();
 }
 
-void Flag::unbind(){
-	CGFshader::unbind();
+void Flag::update(unsigned long time){
+	if(elapsed==0){
+		startTime = time;
+		elapsed = startTime/1000.0;
+	}else
+		elapsed = (time - startTime)/1000.0;
 }
