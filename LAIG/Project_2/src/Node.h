@@ -22,7 +22,7 @@ public:
 	string animationRef;
 	Flag * flag;
 	ComposedAnimation* animations;
-	//vector<Animation*> animation;
+	int wind;
 	
 	void draw(Appearance* appea);
 	Node(){this->app=NULL; this->displayList=NULL; this->flag=NULL; this->animations=NULL;};

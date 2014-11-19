@@ -58,7 +58,7 @@ void GUI::initGUI()
 	
 	addColumnToPanel(varPanel);
 	GLUI_Panel *flagPanel = addPanelToPanel(varPanel, "Flag", 1);
-	windSpinner = addSpinnerToPanel(flagPanel, "Wind", GLUI_SPINNER_INT, &wind, -1);
+	windSpinner = addSpinnerToPanel(flagPanel, "Wind", GLUI_SPINNER_INT, &wind);
 
 	windSpinner->set_int_limits(0, 10, GLUI_LIMIT_WRAP);
 }

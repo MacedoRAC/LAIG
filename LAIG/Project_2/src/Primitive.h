@@ -124,7 +124,8 @@ public:
 	void draw();
 	void draw(Texture * text);
 	void bind();
-	void update(unsigned long time);
+	void update(unsigned long time){};
+	void update(unsigned long time, int wind);
 
 	~Flag(){};
 };

@@ -79,7 +79,7 @@ void Node::update(unsigned long milis) {
 		animations->update(milis);
 
 	if(flag)
-		flag->update(milis);
+		flag->update(milis, wind);
 
 	for (unsigned int i = 0; i < descendantNode.size(); i++){
 			descendantNode[i]->update(milis);
