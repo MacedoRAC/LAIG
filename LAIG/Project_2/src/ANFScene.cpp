@@ -565,7 +565,6 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 
 			if (animationref == NULL){
 				printf("AnimationRef not found!\n");
-				node1.animation = NULL;
 			}else{
 				string animId = "";
 				animId = (string) animationref->Attribute("id");
@@ -573,9 +572,7 @@ ANFScene::ANFScene(char *filename, Graph* graph)
 				node1.animationRef=animId;
 
 				if(animId != ""){
-					Animation *anim = new Animation();
-					(*anim) = graph->animations.find(animId)->second;
-					node1.animation=anim;
+					node1.animation.push_back(&graph->animations.find(animId)->second);
 				}
 			}
 

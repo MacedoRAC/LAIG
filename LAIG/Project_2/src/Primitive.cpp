@@ -635,14 +635,6 @@ void Flag::draw(Texture * text){
 	unbind();
 }
 
-void Flag::update(unsigned long time){
-
-	if(this->startTime == 0)
-		this->startTime = time;
-	else
-		this->deltaT = time - startTime;
-}
-
 void Flag::bind(){
 	CGFshader::bind();
 

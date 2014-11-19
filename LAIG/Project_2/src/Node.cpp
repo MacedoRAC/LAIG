@@ -11,8 +11,9 @@ void Node::draw(Appearance* appea){
 	if(appea)
 		appea->app->apply();
 
-	if(animation)
-			animation->apply();
+	if(animation.size()!=0)
+		for(unsigned int i=0; i<animation.size(); i++)
+			animation[i]->apply();
 
 	
 	// Display List
@@ -67,10 +68,11 @@ void Node::draw(Appearance* appea){
 }
 
 void Node::update(unsigned long milis) {
-	if(animation)
-		animation->update(milis);
+	if(animation.size()!=0)
+		for(unsigned int i=0; i<animation.size(); i++)
+			animation[i]->update(milis);
 
-	for (int i = 0; i < primitives.size(); i++){
-			primitives[i]->update(milis);
+	for (unsigned int i = 0; i < descendantNode.size(); i++){
+			descendantNode[i]->update(milis);
 	}
 }

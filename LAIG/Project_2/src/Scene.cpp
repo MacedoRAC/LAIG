@@ -16,9 +16,6 @@ unsigned int lightsArray[8] = {GL_LIGHT0,GL_LIGHT1,GL_LIGHT2,GL_LIGHT3,GL_LIGHT4
 
 void Scene::init(){
 
-	/*Appearance * appea = NULL;
-	graph->rootNode->createDisplayList(appea);*/
-
 	glClearColor(graph->background[0], graph->background[1], graph->background[2], graph->background[3]);
 
 	//inicializar o vector de cameras da Scene
@@ -134,7 +131,7 @@ void Scene::init(){
 		lights.push_back(newLight);
 	}
 
-	setUpdatePeriod(100);
+	setUpdatePeriod(1);
 
 }
 

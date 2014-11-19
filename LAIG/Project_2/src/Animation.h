@@ -22,10 +22,10 @@ public:
 	Animation(string id, float span, string type);
 	
 	virtual void init(unsigned long time);
-	virtual void update(unsigned long time);
-	virtual void apply();
+	virtual void update(unsigned long time) = 0;
+	virtual void apply() = 0;
 
-	~Animation(){};
+	//~Animation(){};
 };
 
 class LinearAnimation: public Animation{

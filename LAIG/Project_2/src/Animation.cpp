@@ -16,14 +16,6 @@ Animation::Animation(string id, float span, string type){
 	this->reset=true;
 }
 
-void Animation::apply(){
-
-}
-
-void Animation::update(unsigned long time){
-
-}
-
 void Animation::init(unsigned long time){
 
 }

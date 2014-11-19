@@ -20,7 +20,7 @@ public:
 	bool hasDisplayList;
 	GLuint displayList;
 	string animationRef;
-	Animation* animation;
+	vector<Animation*> animation;
 	
 	void draw(Appearance* appea);
 	Node(){this->app=NULL; this->displayList=NULL;};
