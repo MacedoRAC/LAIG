@@ -610,9 +610,9 @@ Flag::Flag(string type, string texture): Plane(type, 30){
 
 	text = new CGFtexture(texture);
 	timer = glGetUniformLocation(id(), "timer");
-	wind_Loc = glGetUniformLocation(id(), "windV");
+	wind_Loc = glGetUniformLocation(id(), "wind");
 	
-	texture_Loc = glGetUniformLocation(id(), "baseImage");
+	texture_Loc = glGetUniformLocation(id(), "text");
 	glUniform1i(texture_Loc, 0);
 }
 
@@ -631,7 +631,7 @@ void Flag::draw(Texture * text){
 void Flag::bind(){
 	CGFshader::bind();
 
-	glUniform1f(timer, elapsed);
+	glUniform1f(timer, ((float)elapsed)/1000.0);
 	glUniform1f(wind_Loc, wind);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -642,9 +642,9 @@ void Flag::bind(){
 void Flag::update(unsigned long time, int wind){
 	if(elapsed==0){
 		startTime = time;
-		elapsed = startTime/1000.0;
+		elapsed = startTime;
 	}else
-		elapsed = (time - startTime)/1000.0;
+		elapsed = (time - startTime);
 
 	this->wind = wind;
 }

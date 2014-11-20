@@ -117,9 +117,9 @@ public:
 	string texture;
 	CGFtexture* text;
 	CGFshader* shader;
-	GLint texture_Loc, wind, wind_Loc, deltaT_Loc;
-	float startTime, elapsed, timer;
-	
+	GLint texture_Loc, wind, wind_Loc, deltaT_Loc, timer;
+	float startTime;
+	int elapsed;
 	Flag(string type, string texture);
 	void draw();
 	void draw(Texture * text);
