@@ -1,0 +1,29 @@
+﻿Build started 30/10/2014 14:28:58.
+     1>Project "C:\Users\André\Desktop\LAIG\Projetc_1\CGFexample\CGFexample.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Release\CGFexample.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt src\ANFScene.cpp src\Appearance.cpp src\Camera.cpp src\Graph.cpp src\GUI.cpp src\Light.cpp src\main.cpp src\Node.cpp src\Primitive.cpp src\Texture.cpp
+         ANFScene.cpp
+     1>src\ANFScene.cpp(1): fatal error C1083: Cannot open include file: 'CGFapplication.h': No such file or directory
+         Appearance.cpp
+     1>c:\users\andré\desktop\laig\projetc_1\cgfexample\src\Appearance.h(6): fatal error C1083: Cannot open include file: 'CGFappearance.h': No such file or directory
+         Camera.cpp
+     1>c:\users\andré\desktop\laig\projetc_1\cgfexample\src\Camera.h(4): fatal error C1083: Cannot open include file: 'CGFcamera.h': No such file or directory
+         Graph.cpp
+     1>c:\users\andré\desktop\laig\projetc_1\cgfexample\src\Appearance.h(6): fatal error C1083: Cannot open include file: 'CGFappearance.h': No such file or directory
+         GUI.cpp
+     1>c:\users\andré\desktop\laig\projetc_1\cgfexample\src\GUI.h(4): fatal error C1083: Cannot open include file: 'CGFscene.h': No such file or directory
+         Light.cpp
+         main.cpp
+     1>src\main.cpp(4): fatal error C1083: Cannot open include file: 'CGFapplication.h': No such file or directory
+         Node.cpp
+     1>c:\users\andré\desktop\laig\projetc_1\cgfexample\src\Appearance.h(6): fatal error C1083: Cannot open include file: 'CGFappearance.h': No such file or directory
+         Primitive.cpp
+     1>src\Primitive.cpp(2): fatal error C1083: Cannot open include file: 'CGFobject.h': No such file or directory
+         Texture.cpp
+     1>Done Building Project "C:\Users\André\Desktop\LAIG\Projetc_1\CGFexample\CGFexample.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:06.25

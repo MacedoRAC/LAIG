@@ -1,0 +1,380 @@
+<anf>
+    <globals>
+        <drawing mode="fill" shading="gouraud" background="0 0.4 0.6 1" />
+        <culling face="back" order="ccw" />
+        <lighting doublesided="false" local="false" enabled="true" ambient="0.8 0.8 0.8 0.8" />
+    </globals>
+
+    <cameras initial="Top view" >
+        <perspective id="Top view" near="1" far="200" angle="90" pos="0 20 0" target="0 0 0" />
+        <perspective id="Red Player" near="1" far="200" angle="0" pos="0 10 30" target="0 0 0" />
+        <perspective id="White Player" near="1" far="200" angle="0" pos="0 10 -30" target="0 0 0" />
+        <ortho id="[Ortho] Y" direction="y" near="-500" far="0" left="-150" right="150" top="150" bottom="-150" />
+        <ortho id="[Ortho] Z" direction="z" near="-100" far="500" left="-50" right="50" top="100" bottom="0" />
+        <ortho id="[Ortho] X" direction="x" near="-100" far="500" left="-50" right="50" top="100" bottom="0" />
+    </cameras>
+
+    <lights>
+        <light id="Top light" type="omni" enabled="true" marker="true" pos="0 100 0" >
+            <component type="ambient" value="1 1 1 1" />
+            <component type="diffuse" value="1 1 1 1" />
+            <component type="specular" value="1 1 1 1" />
+        </light>
+
+        <!--<light id="Forest Spot Light" type="spot" enabled="true" marker="true" pos="25 10 15" target="50 0 15"  
+            angle="20" exponent="25" >
+            <component type="ambient" value="1 1 0 1" />
+            <component type="diffuse" value="1 1 0 1" />
+            <component type="specular" value="1 1 0 1" />
+        </light>-->
+    </lights>
+
+    <textures>
+        <!--<texture id="ground" file="res/ground.jpg" texlength_s="800" texlength_t="800" />
+        <texture id="pine-tree-needle" file="res/pine-tree-needle.jpg" texlength_s="1" texlength_t="1" />
+        <texture id="pine-tree-bark" file="res/pine-tree-bark.png" texlength_s="1" texlength_t="1" />
+        <texture id="airplane-propeller" file="res/propeller.png" texlength_s="1" texlength_t="1" />
+        <texture id="aluminum" file="res/aluminum.jpg" texlength_s="1" texlength_t="1" />-->
+    </textures>
+
+    <appearances>
+        <appearance id="defaultAppearance" shininess="20" >
+            <component type="ambient" value="0 0 0 1" />
+            <component type="diffuse" value="1 1 1 1" />
+            <component type="specular" value="1 1 1 1" />
+        </appearance>
+    </appearances>
+
+    <graph rootid="board">
+        <node id="board">
+            <transforms>
+            </transforms>
+
+            <appearanceref id="defaultAppearance" />
+
+            <primitives>
+            </primitives>
+
+            <descendants>
+                <noderef id="piecePlaceholderLine1" />
+                <noderef id="piecePlaceholderLine2" />
+                <noderef id="piecePlaceholderLine3" />
+                <noderef id="piecePlaceholderLine4" />
+                <noderef id="piecePlaceholderLine5" />
+                <noderef id="piecePlaceholderLine6" />
+                <noderef id="piecePlaceholderLine7" />
+            </descendants>
+        </node>
+
+        <node id="piecePlaceholderLine1">
+            <transforms>
+				<transform type="translate" to="-41 0 0" />
+            </transforms>
+
+            <primitives>
+            </primitives>
+
+            <descendants>
+				<noderef id="piecePlaceholder1" />
+				<noderef id="fence1" />
+                <noderef id="sideFence1" />
+				<noderef id="piecePlaceholder2" />
+				<noderef id="fence2" />
+                <noderef id="sideFence2" />
+				<noderef id="piecePlaceholder3" />
+				<noderef id="fence3" />
+                <noderef id="sideFence3" />
+				<noderef id="piecePlaceholder4" />
+				<noderef id="fence4" />
+                <noderef id="sideFence4" />
+				<noderef id="piecePlaceholder5" />
+				<noderef id="fence5" />
+                <noderef id="sideFence5" />
+				<noderef id="piecePlaceholder6" />
+				<noderef id="fence6" />
+                <noderef id="sideFence6" />
+				<noderef id="piecePlaceholder7" />
+            </descendants>
+        </node>
+
+        <node id="piecePlaceholder1">
+            <transforms>
+                <transform type="scale" factor="10 2 10" />
+				<transform type="translate" to="0 0 41" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+		
+		<node id="fence1">
+            <transforms>
+                <transform type="scale" factor="10 2 2" />
+				<transform type="translate" to="0 -2 31" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="sideFence1">
+            <transforms>
+                <transform type="scale" factor="2 2 10" /> 
+                <transform type="translate" to="0 -2 41" />
+            </transforms>
+
+            <primitives>
+                <cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="piecePlaceholder2">
+            <transforms>
+                <transform type="scale" factor="10 2 10" />
+				<transform type="translate" to="0 0 29" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+		
+		<node id="fence2">
+            <transforms>
+                <transform type="scale" factor="10 2 2" />
+				<transform type="translate" to="0 -2 19" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="sideFence2">
+            <transforms>
+                <transform type="scale" factor="2 2 10" />
+                <transform type="translate" to="0 -2 29" />
+            </transforms>
+
+            <primitives>
+                <cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="piecePlaceholder3">
+            <transforms>
+                <transform type="scale" factor="10 2 10" />
+				<transform type="translate" to="0 0 17" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+		
+		<node id="fence3">
+            <transforms>
+                <transform type="scale" factor="10 2 2" />
+				<transform type="translate" to="0 -2 7" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="sideFence3">
+            <transforms>
+                <transform type="scale" factor="2 2 10" />
+                <transform type="translate" to="0 -2 17" />
+            </transforms>
+
+            <primitives>
+                <cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="piecePlaceholder4">
+            <transforms>
+                <transform type="scale" factor="10 2 10" />
+				<transform type="translate" to="0 0 5" />
+            </transforms>
+
+            <primitives>
+				<cube widthX="10" widthZ="10" height="2" />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+		
+		<node id="fence4">
+            <transforms>
+                <transform type="scale" factor="10 2 2" />
+				<transform type="translate" to="0 -2 -5" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="sideFence4">
+            <transforms>
+                <transform type="scale" factor="2 2 10" />
+                <transform type="translate" to="0 -2 5" />
+            </transforms>
+
+            <primitives>
+                <cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="piecePlaceholder5">
+            <transforms>
+                <transform type="scale" factor="10 2 10" />
+				<transform type="translate" to="0 0 -7" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+		
+		<node id="fence5">
+            <transforms>
+                <transform type="scale" factor="10 2 2" />
+				<transform type="translate" to="0 -2 -17" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="sideFence5">
+            <transforms>
+                <transform type="scale" factor="2 2 10" />
+                <transform type="translate" to="0 -2 -7" />
+            </transforms>
+
+            <primitives>
+                <cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="piecePlaceholder6">
+            <transforms>
+                <transform type="scale" factor="10 2 10" />
+				<transform type="translate" to="0 0 -19" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+		
+		<node id="fence6">
+            <transforms>
+                <transform type="scale" factor="10 2 2" />
+				<transform type="translate" to="0 -2 -29" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="sideFence6">
+            <transforms>
+                <transform type="scale" factor="2 2 10" />
+                <transform type="translate" to="0 -2 -19" />
+            </transforms>
+
+            <primitives>
+                <cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+
+        <node id="piecePlaceholder7">
+            <transforms>
+                <transform type="scale" factor="10 2 10" />
+				<transform type="translate" to="0 0 -31" />
+            </transforms>
+
+            <primitives>
+				<cube />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+		<!--
+		<node id="fence7">
+            <transforms>
+				<transform type="translate" to="0 -2 -41" />
+            </transforms>
+
+            <primitives>
+				<cube widthX="10" widthZ="2" height="2" />
+            </primitives>
+
+            <descendants>
+            </descendants>
+        </node>
+    -->
+    </graph>
+</anf>
