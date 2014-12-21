@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 
 	Graph * pgraph = new Graph();
 
-	char* filename = "airplane.xml";
+	char* filename = "fines.xml";
 	if (argc >1)
 		filename = argv[1];
 	CGFapplication app = CGFapplication();

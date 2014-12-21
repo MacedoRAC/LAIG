@@ -652,64 +652,12 @@ void Flag::update(unsigned long time, int wind){
 
 //CUBE
 Cube::Cube(string type):Primitive(type){
-	sqr1 = Rectangle("rectangle",-0.5,-0.5,0.5,0.5);
-	sqr2 = Rectangle("rectangle",-0.5,-0.5,0.5,0.5);
-	sqr3 = Rectangle("rectangle",-0.5,-0.5,0.5,0.5);
-	sqr4 = Rectangle("rectangle",-0.5,-0.5,0.5,0.5);
-	sqr5 = Rectangle("rectangle",-0.5,-0.5,0.5,0.5);
-	sqr6 = Rectangle("rectangle",-0.5,-0.5,0.5,0.5);
 }
 
 void Cube::draw(){
-	
-	//front face
-	glPushMatrix();
-	glTranslatef(0,0,0.5);
-	glNormal3f(0,0,1);
-	sqr1.draw();
-	glPopMatrix();
-
-	//up face
-	glPushMatrix();
-	glTranslatef(0,0.5,0);
-	glRotatef(270,1,0,0);
-	glNormal3f(0,0,1);
-	sqr2.draw();
-	glPopMatrix();
-
-	//right face
-	glPushMatrix();
-	glTranslatef(0.5,0,0);
-	glRotatef(90,0,1,0);
-	glNormal3f(0,0,1);
-	sqr3.draw();
-	glPopMatrix();
-
-	//back face
-	glPushMatrix();
-	glTranslatef(0,0,-0.5);
-	glRotatef(180,0,1,0);
-	glNormal3f(0,0,1);
-	sqr4.draw();
-	glPopMatrix();
-
-	//bottom face
-	glPushMatrix();
-	glTranslatef(0,-0.5,0);
-	glRotatef(-270,1,0,0);
-	glNormal3f(0,0,1);
-	sqr5.draw();
-	glPopMatrix();
-
-	//left face
-	glPushMatrix();
-	glTranslatef(-0.5,0,0);
-	glRotatef(-90,0,1,0);
-	glNormal3f(0,0,1);
-	sqr6.draw();
-	glPopMatrix();
+	glutSolidCube(1.0);
 }
 
 void Cube:: draw(Texture* text){
-
+	glutSolidCube(1.0);
 }

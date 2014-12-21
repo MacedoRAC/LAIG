@@ -133,7 +133,6 @@ public:
 
 
 class Cube: public Primitive{
-	Rectangle sqr1, sqr2, sqr3, sqr4, sqr5, sqr6;
 public:
 	void draw();
 	void draw(Texture * text);

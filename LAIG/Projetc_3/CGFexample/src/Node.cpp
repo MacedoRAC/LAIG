@@ -59,7 +59,7 @@ void Node::draw(Appearance* appea){
 				}else{
 					primitives[i]->draw();
 				}
-			}
+		}
 
 		//flag
 		if(flag)

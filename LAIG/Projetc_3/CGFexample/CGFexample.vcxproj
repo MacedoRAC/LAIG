@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\tinystr.h" />
+    <ClInclude Include="include\tinyxml.h" />
     <ClInclude Include="src\ANFScene.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Appearance.h" />

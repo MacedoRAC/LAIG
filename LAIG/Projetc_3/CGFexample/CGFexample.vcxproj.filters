@@ -51,6 +51,12 @@
     <ClInclude Include="src\StateOfGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\tinystr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tinyxml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
