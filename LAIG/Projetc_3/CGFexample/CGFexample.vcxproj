@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="include\tinystr.h" />
     <ClInclude Include="include\tinyxml.h" />
+    <ClInclude Include="Socket.h" />
     <ClInclude Include="src\ANFScene.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Appearance.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Socket.cpp" />
     <ClCompile Include="src\ANFScene.cpp" />
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Appearance.cpp" />
