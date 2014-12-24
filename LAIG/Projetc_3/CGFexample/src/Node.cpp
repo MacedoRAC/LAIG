@@ -25,6 +25,11 @@ void Node::draw(Appearance* appea){
 		// Transformações
 		glMultMatrixf(matrix);
 
+		//Picking Names
+		for(unsigned int i = 0; i < pickingNames.size(); i++) {
+			glPushName(pickingNames[i]);
+		}
+
 		// Primitivas
 		for (unsigned int i = 0; i < primitives.size(); i++){
 			if(appea->textureref != ""){
@@ -42,6 +47,10 @@ void Node::draw(Appearance* appea){
 		for (unsigned int i = 0; i < descendantNode.size(); i++)
 			descendantNode[i]->draw(appea);
 
+		for(unsigned int i = 0; i < pickingNames.size(); i++){
+			glPopName();
+		}
+
 		glEndList();
 		
 	}else if(displayList!=NULL && hasDisplayList) {
@@ -51,6 +60,11 @@ void Node::draw(Appearance* appea){
 
 		// Transformações
 		glMultMatrixf(matrix);
+
+		//Picking names
+		for(unsigned int i = 0; i < pickingNames.size(); i++) {
+			glPushName(pickingNames[i]);
+		}
 
 		// Primitivas
 		for (unsigned int i = 0; i < primitives.size(); i++){
@@ -68,6 +82,10 @@ void Node::draw(Appearance* appea){
 		// Nós filhos 
 		for (unsigned int i = 0; i < descendantNode.size(); i++)
 			descendantNode[i]->draw(appea);
+
+		for(unsigned int i = 0; i < pickingNames.size(); i++){
+			glPopName();
+		}
 	}
 
 	glPopMatrix();

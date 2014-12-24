@@ -133,7 +133,7 @@ void Scene::init(){
 		lights.push_back(newLight);
 	}
 
-	setUpdatePeriod(1);
+	setUpdatePeriod(30);
 
 }
 

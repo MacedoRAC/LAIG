@@ -23,6 +23,7 @@ public:
 	Flag * flag;
 	ComposedAnimation* animations;
 	int wind;
+	vector<int>pickingNames;
 	
 	void draw(Appearance* appea);
 	Node(){this->app=NULL; this->displayList=NULL; this->flag=NULL; this->animations=NULL;};
