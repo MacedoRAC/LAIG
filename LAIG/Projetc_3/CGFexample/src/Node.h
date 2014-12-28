@@ -26,7 +26,7 @@ public:
 	vector<int>pickingNames;
 	
 	void draw(Appearance* appea);
-	Node(){this->app=NULL; this->displayList=NULL; this->flag=NULL; this->animations=NULL;};
+	Node();
 	void update(unsigned long milis);
 
 };

@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include"CGFcamera.h"
+#include"Animation.h"
 #include<string>
 #include<vector>
 
@@ -30,5 +31,14 @@ public:
 
 	void apply();
 };
+/*
+class animatedCamera: public Camera, Animation{
+public:
+	vector<float> startPos, endPos, target;
 
+	void apply();
+	void update(unsigned long time);
+	void init(unsigned long time);
+}
+*/
 #endif

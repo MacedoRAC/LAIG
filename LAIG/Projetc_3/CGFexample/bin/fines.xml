@@ -6,7 +6,7 @@
     </globals>
 
     <cameras initial="Top view" >
-        <perspective id="Top view" near="1" far="100" angle="90" pos="0 100 0" target="0 0 0" />
+        <perspective id="Top view" near="1" far="200" angle="0" pos="0 50 0" target="0 0 0" />
         <perspective id="Red Player" near="1" far="200" angle="0" pos="0 10 30" target="0 0 0" />
         <perspective id="White Player" near="1" far="200" angle="0" pos="0 10 -30" target="0 0 0" />
         <ortho id="[Ortho] Y" direction="y" near="-500" far="0" left="-150" right="150" top="150" bottom="-150" />

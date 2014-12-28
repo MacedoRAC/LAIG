@@ -168,12 +168,9 @@ void Scene::display(){
 
 	CGFapplication::activeApp->forceRefresh();
 
-	// ---- BEGIN Background, camera and axis setup
-
-	// Clear image and depth buffer everytime we update the scene
-
-
 	// Initialize Model-View matrix as identity (no transformation
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
 	// Apply transformations corresponding to the camera position relative to the origin
 

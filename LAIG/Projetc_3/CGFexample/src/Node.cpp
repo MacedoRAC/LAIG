@@ -1,6 +1,20 @@
 #include"Node.h"
 #include"CGFapplication.h"
 
+Node::Node(){
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+		glLoadIdentity();
+		glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
+	glPopMatrix();
+
+	this->app=NULL; 
+	this->displayList=NULL; 
+	this->flag=NULL; 
+	this->animations=NULL;
+}
+
 void Node::draw(Appearance* appea){
 
 	glPushMatrix();
